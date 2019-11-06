@@ -8,8 +8,8 @@ import game_framework
 import title_state
 import pause_state
 from Background import Background
-from Character import Character
-from Bullet import Bullet
+from Eru import Eru
+from EruBullet import EruBullet
 from Dragon import Dragon
 from Boom import Boom
 from HPGauge import HPGauge
@@ -24,12 +24,13 @@ count = 0
 hit_count = 0
 boom = []
 hp_gauge = []
+ctrl_dir = 0
 
 
 def enter():
     global background, character, dragon, boom, count, bullet, hp_gauge, hit_count
     background = Background(0)
-    character = Character()
+    character = Eru()
     dragon = []
     bullet = []
     count = 0
@@ -54,6 +55,7 @@ def resume():
 
 
 def handle_events():
+    global ctrl_dir
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
@@ -69,11 +71,19 @@ def handle_events():
             elif event.key == SDLK_LEFT:
                 character.change_x -= 1
 
+            elif event.key == SDLK_LCTRL:
+                ctrl_dir += 1
+
+            elif ctrl_dir > 0 and event.key == SDLK_2:
+                character.atk_upgrade += 1
+
         if event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT:
                 character.change_x -= 1
             elif event.key == SDLK_LEFT:
                 character.change_x += 1
+            elif event.key == SDLK_LCTRL:
+                ctrl_dir -= 1
 
 
 def update():
@@ -133,7 +143,7 @@ def update():
             hit_count = 0
 
     if count == 0:
-        bullet += [Bullet(character.x)]
+        bullet += [EruBullet(character.x, character.atk_upgrade)]
 
     if character.hp == 0:
         game_framework.push_state(title_state)

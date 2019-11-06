@@ -1,7 +1,7 @@
 from pico2d import *
 
 
-class Character:
+class Eru:
 
     def __init__(self):
         self.image = load_image('cha.png')
@@ -17,6 +17,7 @@ class Character:
         self.speed = 10
         self.hp = 3
         self.hit = 0
+        self.atk_upgrade = 1
 
     def update(self):
         if 65 <= self.x and self.change_x < 0:
