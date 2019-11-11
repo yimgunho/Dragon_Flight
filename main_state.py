@@ -17,7 +17,7 @@ from HPGauge import HPGauge
 name = "MainState"
 
 background = None
-character = None
+eru = None
 dragon = []
 bullet = []
 count = 0
@@ -28,9 +28,9 @@ ctrl_dir = 0
 
 
 def enter():
-    global background, character, dragon, boom, count, bullet, hp_gauge, hit_count
+    global background, eru, dragon, boom, count, bullet, hp_gauge, hit_count
     background = Background(0)
-    character = Eru()
+    eru = Eru()
     dragon = []
     bullet = []
     count = 0
@@ -60,36 +60,30 @@ def handle_events():
     for event in events:
         if event.type == SDL_QUIT:
             game_framework.quit()
-        elif event.type == SDL_KEYDOWN:
-            if event.key == SDLK_ESCAPE:
-                game_framework.change_state(title_state)
-            elif event.key == SDLK_p:
-                game_framework.push_state(pause_state)
 
-            elif event.key == SDLK_RIGHT:
-                character.change_x += 1
-            elif event.key == SDLK_LEFT:
-                character.change_x -= 1
+        elif event.type == SDL_KEYDOWN and (event.key == SDLK_ESCAPE):
+            game_framework.change_state(title_state)
 
-            elif event.key == SDLK_LCTRL:
-                ctrl_dir += 1
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_p:
+            game_framework.push_state(pause_state)
 
-            elif ctrl_dir > 0 and event.key == SDLK_2:
-                character.atk_upgrade += 1
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_LCTRL:
+            ctrl_dir += 1
 
-        if event.type == SDL_KEYUP:
-            if event.key == SDLK_RIGHT:
-                character.change_x -= 1
-            elif event.key == SDLK_LEFT:
-                character.change_x += 1
-            elif event.key == SDLK_LCTRL:
-                ctrl_dir -= 1
+        elif event.type == SDL_KEYDOWN and ctrl_dir > 0 and event.key == SDLK_2:
+            eru.atk_upgrade += 1
+
+        elif event.type == SDL_KEYUP and event.key == SDLK_LCTRL:
+            ctrl_dir -= 1
+
+        else:
+            eru.handle_event(event)
 
 
 def update():
     global bullet, count, dragon, boom, hp_gauge, hit_count
     background.update()
-    character.update()
+    eru.update()
 
     if len(dragon) == 0:
         dragon = [Dragon(n * 140 - 70) for n in range(1, 6)]
@@ -111,11 +105,11 @@ def update():
                     dra = [d]
                 bul = [b]
                 break
-        if dragon[d].x - 110 < character.x < dragon[d].x + 110 and \
-                dragon[d].y - 110 < character.y < dragon[d].y + 110:
-            character.hp -= 1
+        if dragon[d].x - 110 < eru.x < dragon[d].x + 110 and \
+                dragon[d].y - 110 < eru.y < dragon[d].y + 110:
+            eru.hp -= 1
             dra = [d]
-            character.hit += 1
+            eru.hit += 1
             break
 
         if dragon[d].y <= -100:
@@ -136,16 +130,16 @@ def update():
 
     count = (count + 1) % 10
 
-    if character.hit > 0:
+    if eru.hit > 0:
         hit_count += 1
         if hit_count > 50:
-            character.hit = 0
+            eru.hit = 0
             hit_count = 0
 
     if count == 0:
-        bullet += [EruBullet(character.x, character.atk_upgrade)]
+        bullet += [EruBullet(eru.x, eru.atk_upgrade)]
 
-    if character.hp == 0:
+    if eru.hp == 0:
         game_framework.push_state(title_state)
 
     for b in range(len(bullet)):
@@ -161,7 +155,7 @@ def draw():
     global bullet
     clear_canvas()
     background.draw()
-    character.draw(character.hit)
+    eru.draw(eru.hit)
     for bul in bullet:
         bul.draw()
     for dra in dragon:

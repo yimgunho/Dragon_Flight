@@ -5,7 +5,7 @@ from Background import Background
 
 name = "TitleState"
 ti_background = None
-character = None
+eru = None
 name = None
 start = None
 feeling = None
@@ -17,17 +17,17 @@ start_draw = True
 
 
 def enter():
-    global character, ti_background, name, start, feeling
+    global eru, ti_background, name, start, feeling
     ti_background = Background(0)
-    character = load_image('title_character.png')
+    eru = load_image('title_character.png')
     name = load_image('title_name.png')
     start = load_image('title_start.png')
     feeling = load_image('title_feeling.png')
 
 
 def exit():
-    global character, ti_background, name, start, feeling
-    del character, ti_background, name, start, feeling
+    global eru, ti_background, name, start, feeling
+    del eru, ti_background, name, start, feeling
 
 
 def handle_events():
@@ -45,7 +45,7 @@ def handle_events():
 def draw():
     clear_canvas()
     ti_background.draw()
-    character.draw(500, 250 + character_move, 450, 490)
+    eru.draw(500, 250 + character_move, 450, 490)
     if start_draw:
         start.draw(350, 150, 600, 100)
     name.draw(350, 620, 500, 300)
