@@ -3,11 +3,12 @@ import json
 import os
 
 from pico2d import *
-
 import game_framework
+import game_world
+
 import title_state
 import pause_state
-from Background import Background
+from Ground import Ground
 from Eru import Eru
 from EruBullet import EruBullet
 from Dragon import Dragon
@@ -16,7 +17,7 @@ from HPGauge import HPGauge
 
 name = "MainState"
 
-background = None
+ground = None
 eru = None
 dragon = []
 bullet = []
@@ -28,22 +29,20 @@ ctrl_dir = 0
 
 
 def enter():
-    global background, eru, dragon, boom, count, bullet, hp_gauge, hit_count
-    background = Background(0)
+    global ground, eru, dragon, boom, count, bullet, hp_gauge, hit_count
+    ground = Ground(0)
     eru = Eru()
     dragon = []
     bullet = []
     count = 0
     boom = []
     hp_gauge = []
+    game_world.add_object(ground, 0)
+    game_world.add_object(eru, 1)
 
 
 def exit():
-    pass
-
-
-#    global background, character, dragon, boom, count, bullet
-#    del background, character, dragon, boom, count, bullet
+    game_world.clear()
 
 
 def pause():
@@ -82,8 +81,8 @@ def handle_events():
 
 def update():
     global bullet, count, dragon, boom, hp_gauge, hit_count
-    background.update()
-    eru.update()
+    for game_object in game_world.all_objects():
+        game_object.update()
 
     if len(dragon) == 0:
         dragon = [Dragon(n * 140 - 70) for n in range(1, 6)]
@@ -154,8 +153,8 @@ def update():
 def draw():
     global bullet
     clear_canvas()
-    background.draw()
-    eru.draw(eru.hit)
+    for game_object in game_world.all_objects():
+        game_object.draw()
     for bul in bullet:
         bul.draw()
     for dra in dragon:

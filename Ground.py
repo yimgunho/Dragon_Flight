@@ -4,7 +4,7 @@ WIDTH = 700
 HEIGHT = 840
 
 
-class Background:
+class Ground:
 
     def __init__(self, a):
         self.image = load_image('background.jpg')

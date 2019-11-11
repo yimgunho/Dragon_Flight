@@ -1,7 +1,7 @@
 import game_framework
 from pico2d import *
 import main_state
-from Background import Background
+from Ground import Ground
 
 name = "TitleState"
 ti_background = None
@@ -18,7 +18,7 @@ start_draw = True
 
 def enter():
     global eru, ti_background, name, start, feeling
-    ti_background = Background(0)
+    ti_background = Ground(0)
     eru = load_image('title_character.png')
     name = load_image('title_name.png')
     start = load_image('title_start.png')

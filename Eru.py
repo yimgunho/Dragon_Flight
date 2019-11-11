@@ -1,6 +1,7 @@
 from pico2d import *
 import game_world
 
+from EruHP import EruHP
 
 RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP = range(4)
 
@@ -32,6 +33,7 @@ class IdleState:
     @staticmethod
     def do(eru):
         eru.frame = (eru.frame + 1) % 6
+        eru.eruHP()
 
     @staticmethod
     def draw(eru):
@@ -60,6 +62,7 @@ class MoveState:
         eru.frame = (eru.frame + 1) % 6
         eru.x += eru.velocity * eru.speed
         eru.x = clamp(65, eru.x, 700 - 65)
+        eru.eruHP()
 
     @staticmethod
     def draw(eru):
@@ -78,8 +81,6 @@ class Eru:
 
     def __init__(self):
         self.image = load_image('cha.png')
-        self.full_hp = load_image('hp_heart_01.png')
-        self.no_hp = load_image('hp_heart_02.png')
         self.damage = load_image('damage.png')
         self.hit_effect = load_image('hit_effect.png')
         self.velocity = 0
@@ -95,6 +96,10 @@ class Eru:
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
 
+    def eruHP(self):
+        HP = EruHP(self.hp)
+        game_world.add_object(HP, 1)
+
     def add_event(self, event):
         self.event_que.insert(0, event)
 
@@ -106,28 +111,14 @@ class Eru:
             self.cur_state = next_state_table[self.cur_state][event]
             self.cur_state.enter(self, event)
 
-    def draw(self, hit):
+    def draw(self):
         self.cur_state.draw(self)
-        self.draw_hp()
-        if hit > 0:
+        if self.hit > 0:
             self.damage.draw(self.x + 50, self.y + 50, 100, 100)
             self.timer = (self.timer + 1) % 20
             if self.timer < 10:
                 self.hit_effect.draw(350, 420, 700, 840)
 
-    def draw_hp(self):
-        if self.hp == 3:
-            self.full_hp.draw(300, 800)
-            self.full_hp.draw(350, 800)
-            self.full_hp.draw(400, 800)
-        elif self.hp == 2:
-            self.full_hp.draw(300, 800)
-            self.full_hp.draw(350, 800)
-            self.no_hp.draw(400, 800)
-        elif self.hp == 1:
-            self.full_hp.draw(300, 800)
-            self.no_hp.draw(350, 800)
-            self.no_hp.draw(400, 800)
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
