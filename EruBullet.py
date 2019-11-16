@@ -1,5 +1,7 @@
 from pico2d import *
 
+import game_world
+
 
 def bullet_load():
     if EruBullet.bullet_image_01 == None:
@@ -31,6 +33,9 @@ class EruBullet:
 
     def update(self):
         self.y += self.speed
+
+        if self.y > game_world.HEIGHT:
+            game_world.remove_object(self)
 
     def draw(self):
         if self.upgrade == 1:

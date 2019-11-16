@@ -1,20 +1,20 @@
 from pico2d import *
+
+import game_framework
 import game_world
 from EruBullet import EruBullet
-from EruHP import EruHP
 
-BIRD_SIZE = 70  # 2m 10cm
+Eru_Size = 200
 
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-FLY_SPEED_KMPH = 40.0  # Km / Hour
+FLY_SPEED_KMPH = 100.0  # Km / Hour
 FLY_SPEED_MPM = (FLY_SPEED_KMPH * 1000.0 / 60.0)
 FLY_SPEED_MPS = (FLY_SPEED_MPM / 60.0)
 FLY_SPEED_PPS = (FLY_SPEED_MPS * PIXEL_PER_METER)
 
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-FRAMES_PER_ACTION = 14
-
+FRAMES_PER_ACTION = 8
 
 RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP = range(4)
 
@@ -31,13 +31,13 @@ class IdleState:
     @staticmethod
     def enter(eru, event):
         if event == RIGHT_DOWN:
-            eru.velocity += 1
+            eru.velocity += FLY_SPEED_PPS
         elif event == LEFT_DOWN:
-            eru.velocity -= 1
+            eru.velocity -= FLY_SPEED_PPS
         elif event == RIGHT_UP:
-            eru.velocity -= 1
+            eru.velocity -= FLY_SPEED_PPS
         elif event == LEFT_UP:
-            eru.velocity += 1
+            eru.velocity += FLY_SPEED_PPS
 
     @staticmethod
     def exit(eru, event):
@@ -45,13 +45,16 @@ class IdleState:
 
     @staticmethod
     def do(eru):
-        eru.frame = (eru.frame + 1) % 6
-        eru.eruHP()
-        eru.bullet_shoot()
+        eru.frame = (eru.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) \
+                    % FRAMES_PER_ACTION
+        if int(eru.frame) == 0:
+            eru.bullet_shoot()
+
 
     @staticmethod
     def draw(eru):
-        eru.image.clip_draw(eru.frame * 128, 0, 128, 128, eru.x, eru.y, 140, 140)
+        eru.image.clip_draw(int(eru.frame) * 150, 0, 150, 150, eru.x, eru.y, Eru_Size, Eru_Size)
+        eru.hp_draw()
 
 
 class MoveState:
@@ -59,13 +62,13 @@ class MoveState:
     @staticmethod
     def enter(eru, event):
         if event == RIGHT_DOWN:
-            eru.velocity += 1
+            eru.velocity += FLY_SPEED_PPS
         elif event == LEFT_DOWN:
-            eru.velocity -= 1
+            eru.velocity -= FLY_SPEED_PPS
         elif event == RIGHT_UP:
-            eru.velocity -= 1
+            eru.velocity -= FLY_SPEED_PPS
         elif event == LEFT_UP:
-            eru.velocity += 1
+            eru.velocity += FLY_SPEED_PPS
 
     @staticmethod
     def exit(eru, event):
@@ -73,15 +76,17 @@ class MoveState:
 
     @staticmethod
     def do(eru):
-        eru.frame = (eru.frame + 1) % 6
-        eru.x += eru.velocity * eru.speed
-        eru.x = clamp(65, eru.x, 700 - 65)
-        eru.eruHP()
-        eru.bullet_shoot()
+        eru.frame = (eru.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) \
+                    % FRAMES_PER_ACTION
+        eru.x += eru.velocity * game_framework.frame_time
+        eru.x = clamp(Eru_Size * 0.5, eru.x, game_world.WIDTH - Eru_Size * 0.5)
+        if int(eru.frame) == 0:
+            eru.bullet_shoot()
 
     @staticmethod
     def draw(eru):
-        eru.image.clip_draw(eru.frame * 128, 0, 128, 128, eru.x, eru.y, 140, 140)
+        eru.image.clip_draw(int(eru.frame) * 150, 0, 150, 150, eru.x, eru.y, Eru_Size, Eru_Size)
+        eru.hp_draw()
 
 
 next_state_table = {
@@ -93,11 +98,22 @@ next_state_table = {
 
 
 class Eru:
+    image = None
+    Full_image = None
+    Empty_image = None
 
     def __init__(self):
-        self.image = load_image('cha.png')
+        if Eru.image == None:
+            Eru.image = load_image('Eru.png')
+
         self.damage = load_image('damage.png')
         self.hit_effect = load_image('hit_effect.png')
+
+        if Eru.Full_image is None:
+            self.Full_image = load_image('hp_heart_01.png')
+        if Eru.Empty_image is None:
+            self.Empty_image = load_image('hp_heart_02.png')
+
         self.velocity = 0
         self.timer = 0
         self.frame = 0
@@ -110,10 +126,6 @@ class Eru:
         self.event_que = []
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
-
-    def eruHP(self):
-        HP = EruHP(self.hp)
-        game_world.add_object(HP, 1)
 
     def bullet_shoot(self):
         bullet = EruBullet(self.x, self.atk_upgrade)
@@ -143,7 +155,19 @@ class Eru:
             key_event = key_event_table[(event.type, event.key)]
             self.add_event(key_event)
 
+    def hp_draw(self):
+        if self.hp == 3:
+            self.Full_image.draw(300, game_world.HEIGHT - 50)
+            self.Full_image.draw(350, game_world.HEIGHT - 50)
+            self.Full_image.draw(400, game_world.HEIGHT - 50)
 
+        elif self.hp == 2:
+            self.Full_image.draw(300, game_world.HEIGHT - 50)
+            self.Full_image.draw(350, game_world.HEIGHT - 50)
+            self.Empty_image.draw(400, game_world.HEIGHT - 50)
 
-
+        elif self.hp == 1:
+            self.Full_image.draw(300, game_world.HEIGHT - 50)
+            self.Empty_image.draw(350, game_world.HEIGHT - 50)
+            self.Empty_image.draw(400, game_world.HEIGHT - 50)
 

@@ -1,13 +1,16 @@
 import game_framework
 from pico2d import *
+
+import game_world
 import main_state
 from Ground import Ground, WIDTH, HEIGHT
+from Title import Eru_Illustration, Game_Name
 
-title_name = "TitleState"
-ti_background = None
-eru = None
-title_name = None
-start = None
+game_name = "TitleState"
+background = None
+eru_illustration = None
+game_name = None
+start_space = None
 feeling = None
 character_move = 0
 character_up = True
@@ -18,17 +21,17 @@ velocity = 100
 
 
 def enter():
-    global eru, ti_background, title_name, start, feeling
-    ti_background = Ground(0)
-    eru = load_image('title_character.png')
-    title_name = load_image('title_name.png')
-    start = load_image('title_start.png')
-    feeling = load_image('title_feeling.png')
+    global eru_illustration, background, game_name, start_space, feeling
+    background = Ground(0)
+    eru_illustration = Eru_Illustration()
+    game_name = Game_Name()
+    game_world.add_object(background, 0)
+    game_world.add_object(game_name, 1)
+    game_world.add_object(eru_illustration, 1)
 
 
 def exit():
-    global eru, ti_background, title_name, start, feeling
-    del eru, ti_background, title_name, start, feeling
+    game_world.clear()
 
 
 def handle_events():
@@ -45,40 +48,14 @@ def handle_events():
 
 def draw():
     clear_canvas()
-    ti_background.draw()
-    eru.draw(500, 250 + character_move, 450, 490)
-    if start_draw:
-        start.draw(WIDTH * 0.5, HEIGHT * 0.15, WIDTH * 0.9, HEIGHT * 0.15)
-    title_name.draw(WIDTH * 0.5, HEIGHT * 0.7, WIDTH * 0.8, HEIGHT * 0.3)
-    feeling.draw(WIDTH * 0.5, HEIGHT * 0.5, WIDTH, HEIGHT)
+    for game_object in game_world.all_objects():
+        game_object.draw()
     update_canvas()
 
 
 def update():
-    global character_move, character_up, count, start_time, start_draw
-    ti_background.update()
-
-    count = (count + 1) % 2
-
-    if count == 0:
-        if character_move > 20:
-            character_up = 1
-        elif character_move < 0:
-            character_up = 0
-
-        if character_up == 0:
-            character_move += velocity * game_framework.frame_time
-        elif character_up == 1:
-            character_move -= velocity * game_framework.frame_time
-
-    if start_time > 50:
-        start_time = 0
-        if start_draw:
-            start_draw = False
-        else:
-            start_draw = True
-
-    start_time += velocity * game_framework.frame_time
+    for game_object in game_world.all_objects():
+        game_object.update()
 
 
 def pause():

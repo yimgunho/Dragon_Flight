@@ -15,28 +15,18 @@ from Dragon import Dragon
 from Boom import Boom
 from HPGauge import HPGauge
 
-title_name = "MainState"
+game_name = "MainState"
 
 ground = None
 eru = None
-dragon = []
-bullet = []
-count = 0
-hit_count = 0
-boom = []
-hp_gauge = []
+heart_point = None
 ctrl_dir = 0
 
 
 def enter():
-    global ground, eru, dragon, boom, count, bullet, hp_gauge, hit_count
+    global ground, eru, heart_point
     ground = Ground(0)
     eru = Eru()
-    dragon = []
-    bullet = []
-    count = 0
-    boom = []
-    hp_gauge = []
     game_world.add_object(ground, 0)
     game_world.add_object(eru, 1)
 
