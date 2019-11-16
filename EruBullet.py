@@ -1,20 +1,14 @@
 from pico2d import *
 
 
-def bullet_load(atk_upgrade):
-    if atk_upgrade == 1 and EruBullet.bullet_image_01 is None:
+def bullet_load():
+    if EruBullet.bullet_image_01 == None:
         EruBullet.bullet_image_01 = load_image('Erubullet_01.png')
-    if atk_upgrade == 2 and EruBullet.bullet_image_02 is None:
         EruBullet.bullet_image_02 = load_image('Erubullet_02.png')
-    if atk_upgrade == 3 and EruBullet.bullet_image_03 is None:
         EruBullet.bullet_image_03 = load_image('Erubullet_03.png')
-    if atk_upgrade == 4 and EruBullet.bullet_image_04 is None:
         EruBullet.bullet_image_04 = load_image('Erubullet_04.png')
-    if atk_upgrade == 5 and EruBullet.bullet_image_05 is None:
         EruBullet.bullet_image_05 = load_image('Erubullet_05.png')
-    if atk_upgrade == 6 and EruBullet.bullet_image_06 is None:
         EruBullet.bullet_image_06 = load_image('Erubullet_06.png')
-    if atk_upgrade == 7 and EruBullet.bullet_image_07 is None:
         EruBullet.bullet_image_07 = load_image('Erubullet_07.png')
 
 
@@ -28,9 +22,9 @@ class EruBullet:
     bullet_image_07 = None
 
     def __init__(self, x, atk_upgrade):
-        bullet_load(atk_upgrade)
+        bullet_load()
         self.x = x
-        self.y = 100
+        self.y = 200
         self.speed = 10
         self.atk = 20
         self.upgrade = atk_upgrade

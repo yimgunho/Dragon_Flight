@@ -3,7 +3,7 @@ from pico2d import *
 import main_state
 import title_state
 
-name = "PauseState"
+title_name = "PauseState"
 image = None
 pause_time = 0.0
 pause_draw = True

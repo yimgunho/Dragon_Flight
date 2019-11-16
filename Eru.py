@@ -1,7 +1,20 @@
 from pico2d import *
 import game_world
-
+from EruBullet import EruBullet
 from EruHP import EruHP
+
+BIRD_SIZE = 70  # 2m 10cm
+
+PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
+FLY_SPEED_KMPH = 40.0  # Km / Hour
+FLY_SPEED_MPM = (FLY_SPEED_KMPH * 1000.0 / 60.0)
+FLY_SPEED_MPS = (FLY_SPEED_MPM / 60.0)
+FLY_SPEED_PPS = (FLY_SPEED_MPS * PIXEL_PER_METER)
+
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 14
+
 
 RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP = range(4)
 
@@ -34,6 +47,7 @@ class IdleState:
     def do(eru):
         eru.frame = (eru.frame + 1) % 6
         eru.eruHP()
+        eru.bullet_shoot()
 
     @staticmethod
     def draw(eru):
@@ -54,7 +68,7 @@ class MoveState:
             eru.velocity += 1
 
     @staticmethod
-    def exit(boy, event):
+    def exit(eru, event):
         pass
 
     @staticmethod
@@ -63,6 +77,7 @@ class MoveState:
         eru.x += eru.velocity * eru.speed
         eru.x = clamp(65, eru.x, 700 - 65)
         eru.eruHP()
+        eru.bullet_shoot()
 
     @staticmethod
     def draw(eru):
@@ -100,6 +115,10 @@ class Eru:
         HP = EruHP(self.hp)
         game_world.add_object(HP, 1)
 
+    def bullet_shoot(self):
+        bullet = EruBullet(self.x, self.atk_upgrade)
+        game_world.add_object(bullet, 1)
+
     def add_event(self, event):
         self.event_que.insert(0, event)
 
@@ -118,7 +137,6 @@ class Eru:
             self.timer = (self.timer + 1) % 20
             if self.timer < 10:
                 self.hit_effect.draw(350, 420, 700, 840)
-
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:

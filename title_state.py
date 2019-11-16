@@ -1,12 +1,12 @@
 import game_framework
 from pico2d import *
 import main_state
-from Ground import Ground
+from Ground import Ground, WIDTH, HEIGHT
 
-name = "TitleState"
+title_name = "TitleState"
 ti_background = None
 eru = None
-name = None
+title_name = None
 start = None
 feeling = None
 character_move = 0
@@ -14,20 +14,21 @@ character_up = True
 count = 0
 start_time = 0.0
 start_draw = True
+velocity = 100
 
 
 def enter():
-    global eru, ti_background, name, start, feeling
+    global eru, ti_background, title_name, start, feeling
     ti_background = Ground(0)
     eru = load_image('title_character.png')
-    name = load_image('title_name.png')
+    title_name = load_image('title_name.png')
     start = load_image('title_start.png')
     feeling = load_image('title_feeling.png')
 
 
 def exit():
-    global eru, ti_background, name, start, feeling
-    del eru, ti_background, name, start, feeling
+    global eru, ti_background, title_name, start, feeling
+    del eru, ti_background, title_name, start, feeling
 
 
 def handle_events():
@@ -47,10 +48,9 @@ def draw():
     ti_background.draw()
     eru.draw(500, 250 + character_move, 450, 490)
     if start_draw:
-        start.draw(350, 150, 600, 100)
-    name.draw(350, 620, 500, 300)
-    feeling.draw(350, 420, 700, 840)
-    delay(0.02)
+        start.draw(WIDTH * 0.5, HEIGHT * 0.15, WIDTH * 0.9, HEIGHT * 0.15)
+    title_name.draw(WIDTH * 0.5, HEIGHT * 0.7, WIDTH * 0.8, HEIGHT * 0.3)
+    feeling.draw(WIDTH * 0.5, HEIGHT * 0.5, WIDTH, HEIGHT)
     update_canvas()
 
 
@@ -67,18 +67,18 @@ def update():
             character_up = 0
 
         if character_up == 0:
-            character_move += 1
+            character_move += velocity * game_framework.frame_time
         elif character_up == 1:
-            character_move -= 1
+            character_move -= velocity * game_framework.frame_time
 
-    if start_time > 0.2:
+    if start_time > 50:
         start_time = 0
         if start_draw:
             start_draw = False
         else:
             start_draw = True
 
-    start_time += 0.01
+    start_time += velocity * game_framework.frame_time
 
 
 def pause():
