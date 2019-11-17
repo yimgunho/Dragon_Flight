@@ -20,7 +20,7 @@ game_name = "MainState"
 ground = None
 eru = None
 heart_point = None
-dragon = None
+dragons = []
 
 
 def collide(a, b):
@@ -35,14 +35,17 @@ def collide(a, b):
 
 
 def enter():
-    global ground, eru, dragon
+    global ground
     ground = Ground(0)
-    eru = Eru()
     game_world.add_object(ground, 0)
+
+    global eru
+    eru = Eru()
     game_world.add_object(eru, 1)
 
-
-#   game_world.add_object(dragon, 1)
+    global dragons
+    dragons = [Dragon(i) for i in range(5)]
+    game_world.add_objects(dragons, 1)
 
 
 def exit():

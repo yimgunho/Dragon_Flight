@@ -5,6 +5,8 @@ import game_world
 from Eru import FRAMES_PER_ACTION, ACTION_PER_TIME
 
 
+Dragon_Size = 150
+
 class IdleState:
 
     @staticmethod
@@ -28,9 +30,8 @@ class IdleState:
 
 
     @staticmethod
-    def draw(eru):
-        eru.image.clip_draw(int(eru.frame) * 150, 0, 150, 150, eru.x, eru.y, Eru_Size, Eru_Size)
-        eru.hp_draw()
+    def draw(dragon):
+        dragon.image.clip_draw(int(dragon.frame) * 150, 0, 150, 150, dragon.x, dragon.y, Dragon_Size, Dragon_Size)
 
 
 class Dragon:
