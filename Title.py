@@ -3,13 +3,6 @@ from pico2d import *
 import game_world
 
 
-PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-SPEED_KMPH = 5.0  # Km / Hour
-SPEED_MPM = (SPEED_KMPH * 1000.0 / 60.0)
-SPEED_MPS = (SPEED_MPM / 60.0)
-SPEED_PPS = (SPEED_MPS * PIXEL_PER_METER)
-
-
 class Eru_Illustration:
     image = None
 
@@ -22,13 +15,13 @@ class Eru_Illustration:
 
     def update(self):
         if self.dir == 0:
-            self.y += SPEED_PPS * game_framework.frame_time
+            self.y += game_world.SPEED_PPS * game_framework.frame_time
             clamp(game_world.HEIGHT * 0.35, self.y, game_world.HEIGHT * 0.39)
             if self.y >= game_world.HEIGHT * 0.39:
                 self.dir = 1
 
         elif self.dir == 1:
-            self.y -= SPEED_PPS * game_framework.frame_time
+            self.y -= game_world.SPEED_PPS * game_framework.frame_time
             clamp(game_world.HEIGHT * 0.35, self.y, game_world.HEIGHT * 0.39)
             if self.y <= game_world.HEIGHT * 0.35:
                 self.dir = 0

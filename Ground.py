@@ -1,6 +1,6 @@
 from pico2d import *
 import game_framework
-from game_world import HEIGHT, WIDTH
+from game_world import HEIGHT, WIDTH, SPEED_PPS
 
 
 class Ground:
@@ -17,8 +17,8 @@ class Ground:
         elif self.second <= -(HEIGHT * 0.5):
             self.second = HEIGHT * 0.5 + HEIGHT
 
-        self.first -= 1
-        self.second -= 1
+        self.first -= SPEED_PPS * 0.01
+        self.second -= SPEED_PPS * 0.01
 
     def draw(self):
         self.image.clip_draw(720 * self.frame, 0, 720, 1280, WIDTH * 0.5, self.first, WIDTH, HEIGHT)

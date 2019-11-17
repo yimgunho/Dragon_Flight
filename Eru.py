@@ -6,23 +6,19 @@ from EruBullet import EruBullet
 
 Eru_Size = 200
 
-PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-FLY_SPEED_KMPH = 100.0  # Km / Hour
-FLY_SPEED_MPM = (FLY_SPEED_KMPH * 1000.0 / 60.0)
-FLY_SPEED_MPS = (FLY_SPEED_MPM / 60.0)
-FLY_SPEED_PPS = (FLY_SPEED_MPS * PIXEL_PER_METER)
-
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
-RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP = range(4)
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, ONE, TWO = range(6)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
     (SDL_KEYDOWN, SDLK_LEFT): LEFT_DOWN,
     (SDL_KEYUP, SDLK_RIGHT): RIGHT_UP,
-    (SDL_KEYUP, SDLK_LEFT): LEFT_UP
+    (SDL_KEYUP, SDLK_LEFT): LEFT_UP,
+    (SDL_KEYDOWN, SDLK_1): ONE,
+    (SDL_KEYDOWN, SDLK_2): TWO
 }
 
 
@@ -31,24 +27,33 @@ class IdleState:
     @staticmethod
     def enter(eru, event):
         if event == RIGHT_DOWN:
-            eru.velocity += FLY_SPEED_PPS
+            eru.velocity += game_world.SPEED_PPS * 5
         elif event == LEFT_DOWN:
-            eru.velocity -= FLY_SPEED_PPS
+            eru.velocity -= game_world.SPEED_PPS * 5
         elif event == RIGHT_UP:
-            eru.velocity -= FLY_SPEED_PPS
+            eru.velocity -= game_world.SPEED_PPS * 5
         elif event == LEFT_UP:
-            eru.velocity += FLY_SPEED_PPS
+            eru.velocity += game_world.SPEED_PPS * 5
 
     @staticmethod
     def exit(eru, event):
-        pass
+        if event == ONE:
+            if eru.bullet_atk_upgrade < 5:
+                eru.bullet_atk_upgrade += 1
+        if event == TWO:
+            if eru.bullet_speed_upgrade < 5:
+                eru.bullet_speed_upgrade += 1
 
     @staticmethod
     def do(eru):
         eru.frame = (eru.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) \
                     % FRAMES_PER_ACTION
-        if int(eru.frame) == 0:
+        eru.distance += game_framework.frame_time * game_world.SPEED_PPS
+        eru.bullet_timer += game_framework.frame_time * 10
+
+        if int(eru.bullet_timer) >= 3 - eru.bullet_speed_upgrade * 0.5:
             eru.bullet_shoot()
+            eru.bullet_timer = 0
 
 
     @staticmethod
@@ -62,17 +67,22 @@ class MoveState:
     @staticmethod
     def enter(eru, event):
         if event == RIGHT_DOWN:
-            eru.velocity += FLY_SPEED_PPS
+            eru.velocity += game_world.SPEED_PPS * 5
         elif event == LEFT_DOWN:
-            eru.velocity -= FLY_SPEED_PPS
+            eru.velocity -= game_world.SPEED_PPS * 5
         elif event == RIGHT_UP:
-            eru.velocity -= FLY_SPEED_PPS
+            eru.velocity -= game_world.SPEED_PPS * 5
         elif event == LEFT_UP:
-            eru.velocity += FLY_SPEED_PPS
+            eru.velocity += game_world.SPEED_PPS * 5
 
     @staticmethod
     def exit(eru, event):
-        pass
+        if event == ONE:
+            if eru.bullet_atk_upgrade < 5:
+                eru.bullet_atk_upgrade += 1
+        if event == TWO:
+            if eru.bullet_speed_upgrade < 5:
+                eru.bullet_speed_upgrade += 1
 
     @staticmethod
     def do(eru):
@@ -80,8 +90,12 @@ class MoveState:
                     % FRAMES_PER_ACTION
         eru.x += eru.velocity * game_framework.frame_time
         eru.x = clamp(Eru_Size * 0.5, eru.x, game_world.WIDTH - Eru_Size * 0.5)
-        if int(eru.frame) == 0:
+        eru.distance += game_framework.frame_time * game_world.SPEED_PPS
+
+        eru.bullet_timer += game_framework.frame_time * 10
+        if int(eru.bullet_timer) >= 3 - eru.bullet_speed_upgrade * 0.5:
             eru.bullet_shoot()
+            eru.bullet_timer = 0
 
     @staticmethod
     def draw(eru):
@@ -91,9 +105,11 @@ class MoveState:
 
 next_state_table = {
     IdleState: {RIGHT_UP: MoveState, LEFT_UP: MoveState,
-                RIGHT_DOWN: MoveState, LEFT_DOWN: MoveState},
+                RIGHT_DOWN: MoveState, LEFT_DOWN: MoveState,
+                ONE : IdleState, TWO : IdleState},
     MoveState: {RIGHT_UP: IdleState, LEFT_UP: IdleState,
-                LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState}
+                LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState,
+                ONE : MoveState, TWO : MoveState}
 }
 
 
@@ -115,20 +131,24 @@ class Eru:
             self.Empty_image = load_image('hp_heart_02.png')
 
         self.velocity = 0
-        self.timer = 0
         self.frame = 0
+        self.bullet_timer = 0
         self.x = 350
         self.y = 100
-        self.speed = 10
         self.hp = 3
-        self.hit = 0
-        self.atk_upgrade = 1
+        self.distance = 0
+        self.bullet_atk_upgrade = 1
+        self.bullet_speed_upgrade = 1
         self.event_que = []
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
+        self.font = load_font('NanumGothicExtraBold.TTF', 30)
+
+    def get_bb(self):
+        return self.x - Eru_Size * 0.2, self.y - Eru_Size * 0.25, self.x + Eru_Size * 0.2, self.y + Eru_Size * 0.25
 
     def bullet_shoot(self):
-        bullet = EruBullet(self.x, self.atk_upgrade)
+        bullet = EruBullet(self.x, self.bullet_atk_upgrade, self.bullet_speed_upgrade)
         game_world.add_object(bullet, 1)
 
     def add_event(self, event):
@@ -144,11 +164,9 @@ class Eru:
 
     def draw(self):
         self.cur_state.draw(self)
-        if self.hit > 0:
-            self.damage.draw(self.x + 50, self.y + 50, 100, 100)
-            self.timer = (self.timer + 1) % 20
-            if self.timer < 10:
-                self.hit_effect.draw(350, 420, 700, 840)
+        self.font.draw(game_world.WIDTH * 0.7, game_world.HEIGHT - 50,
+                       '%10.0f M' % (self.distance - (self.distance % 10)), (255, 255, 0))
+        draw_rectangle(*self.get_bb())
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:

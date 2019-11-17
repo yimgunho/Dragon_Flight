@@ -20,15 +20,29 @@ game_name = "MainState"
 ground = None
 eru = None
 heart_point = None
-ctrl_dir = 0
+dragon = None
+
+
+def collide(a, b):
+    left_a, bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b: return False
+    if bottom_a > top_b: return False
+
+    return True
 
 
 def enter():
-    global ground, eru, heart_point
+    global ground, eru, dragon
     ground = Ground(0)
     eru = Eru()
     game_world.add_object(ground, 0)
     game_world.add_object(eru, 1)
+
+
+#   game_world.add_object(dragon, 1)
 
 
 def exit():
@@ -44,7 +58,6 @@ def resume():
 
 
 def handle_events():
-    global ctrl_dir
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
@@ -56,15 +69,6 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_p:
             game_framework.push_state(pause_state)
 
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_LCTRL:
-            ctrl_dir += 1
-
-        elif event.type == SDL_KEYDOWN and ctrl_dir > 0 and event.key == SDLK_2:
-            eru.atk_upgrade += 1
-
-        elif event.type == SDL_KEYUP and event.key == SDLK_LCTRL:
-            ctrl_dir -= 1
-
         else:
             eru.handle_event(event)
 
@@ -72,6 +76,8 @@ def handle_events():
 def update():
     for game_object in game_world.all_objects():
         game_object.update()
+
+
 
 def draw():
     clear_canvas()
