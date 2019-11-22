@@ -1,52 +1,50 @@
 from pico2d import *
+import main_state
 
 import game_world
 
-
-def bullet_load():
-    if EruBullet.bullet_image_01 == None:
-        EruBullet.bullet_image_01 = load_image('Erubullet_01.png')
-        EruBullet.bullet_image_02 = load_image('Erubullet_02.png')
-        EruBullet.bullet_image_03 = load_image('Erubullet_03.png')
-        EruBullet.bullet_image_04 = load_image('Erubullet_04.png')
-        EruBullet.bullet_image_05 = load_image('Erubullet_05.png')
+PIXEL_PER_METER = (1.0 / 0.3)  # 10 pixel 30 cm
+BULLET_SPEED_KMPH = 10.0  # Km / Hour
+BULLET_SPEED_MPM = (BULLET_SPEED_KMPH * 1000.0 / 60.0)
+BULLET_SPEED_MPS = (BULLET_SPEED_MPM / 60.0)
+BULLET_SPEED_PPS = (BULLET_SPEED_MPS * PIXEL_PER_METER)
 
 
 class EruBullet:
-    bullet_image_01 = None
-    bullet_image_02 = None
-    bullet_image_03 = None
-    bullet_image_04 = None
-    bullet_image_05 = None
+    images = None
 
-    def __init__(self, x, bullet_atk_upgrade, bullet_speed_upgrade):
-        bullet_load()
-        self.x = x
+    def __init__(self):
+        eru = main_state.get_eru()
+        if EruBullet.images == None:
+            EruBullet.images = []
+            EruBullet.images += [load_image('Erubullet_01.png')]
+            EruBullet.images += [load_image('Erubullet_02.png')]
+            EruBullet.images += [load_image('Erubullet_03.png')]
+            EruBullet.images += [load_image('Erubullet_04.png')]
+            EruBullet.images += [load_image('Erubullet_05.png')]
+
+        self.x = eru.x
         self.y = 200
-        self.bullet_atk_upgrade = bullet_atk_upgrade
-        self.bullet_speed_upgrade = bullet_speed_upgrade
+        self.bullet_atk_upgrade = eru.bullet_atk_upgrade
+        self.bullet_speed_upgrade = eru.bullet_speed_upgrade
+        game_world.add_object(self, 1)
 
     def get_bb(self):
         return self.x - 20 - self.bullet_atk_upgrade * 10, self.y - 30 - self.bullet_atk_upgrade * 10, \
                self.x + 20 + self.bullet_atk_upgrade * 10, self.y + 30 + self.bullet_atk_upgrade * 10
 
     def update(self):
-        self.y += game_world.SPEED_PPS * 0.015 + (self.bullet_speed_upgrade * 0.1)
+        eru = main_state.get_eru()
+        self.y += BULLET_SPEED_PPS
 
         if self.y > game_world.HEIGHT:
             game_world.remove_object(self)
+            eru.bullets.remove(self)
+
 
     def draw(self):
-        if self.bullet_atk_upgrade == 1:
-            self.bullet_image_01.draw(self.x, self.y, 40 + self.bullet_atk_upgrade * 20, 60 + self.bullet_atk_upgrade * 20)
-        elif self.bullet_atk_upgrade == 2:
-            self.bullet_image_02.draw(self.x, self.y, 40 + self.bullet_atk_upgrade * 20, 60 + self.bullet_atk_upgrade * 20)
-        elif self.bullet_atk_upgrade == 3:
-            self.bullet_image_03.draw(self.x, self.y, 40 + self.bullet_atk_upgrade * 20, 60 + self.bullet_atk_upgrade * 20)
-        elif self.bullet_atk_upgrade == 4:
-            self.bullet_image_04.draw(self.x, self.y, 40 + self.bullet_atk_upgrade * 20, 60 + self.bullet_atk_upgrade * 20)
-        elif self.bullet_atk_upgrade == 5:
-            self.bullet_image_05.draw(self.x, self.y, 40 + self.bullet_atk_upgrade * 20, 60 + self.bullet_atk_upgrade * 20)
+        self.images[self.bullet_atk_upgrade].draw(self.x, self.y, 40 + self.bullet_atk_upgrade * 20, 60 + self.bullet_atk_upgrade * 20)
+
         draw_rectangle(*self.get_bb())
 
 

@@ -21,6 +21,7 @@ ground = None
 eru = None
 heart_point = None
 dragons = []
+bullets = []
 
 
 def collide(a, b):
@@ -32,6 +33,14 @@ def collide(a, b):
     if bottom_a > top_b: return False
 
     return True
+
+
+def get_eru():
+    return eru
+
+
+def get_dragons():
+    return dragons
 
 
 def enter():
@@ -77,9 +86,13 @@ def handle_events():
 
 
 def update():
+    global dragons
     for game_object in game_world.all_objects():
         game_object.update()
 
+    if len(dragons) <= 0:
+        dragons = [Dragon(i) for i in range(5)]
+        game_world.add_objects(dragons, 1)
 
 
 def draw():

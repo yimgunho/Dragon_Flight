@@ -10,6 +10,8 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
+bullet = []
+
 RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, ONE, TWO = range(6)
 
 key_event_table = {
@@ -22,44 +24,13 @@ key_event_table = {
 }
 
 
-class IdleState:
-
-    @staticmethod
-    def enter(eru, event):
-        if event == RIGHT_DOWN:
-            eru.velocity += game_world.SPEED_PPS * 5
-        elif event == LEFT_DOWN:
-            eru.velocity -= game_world.SPEED_PPS * 5
-        elif event == RIGHT_UP:
-            eru.velocity -= game_world.SPEED_PPS * 5
-        elif event == LEFT_UP:
-            eru.velocity += game_world.SPEED_PPS * 5
-
-    @staticmethod
-    def exit(eru, event):
-        if event == ONE:
-            if eru.bullet_atk_upgrade < 5:
-                eru.bullet_atk_upgrade += 1
-        if event == TWO:
-            if eru.bullet_speed_upgrade < 5:
-                eru.bullet_speed_upgrade += 1
-
-    @staticmethod
-    def do(eru):
-        eru.frame = (eru.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) \
-                    % FRAMES_PER_ACTION
-        eru.distance += game_framework.frame_time * game_world.SPEED_PPS
-        eru.bullet_timer += game_framework.frame_time * 10
-
-        if int(eru.bullet_timer) >= 3 - eru.bullet_speed_upgrade * 0.5:
-            eru.bullet_shoot()
-            eru.bullet_timer = 0
-
-
-    @staticmethod
-    def draw(eru):
-        eru.image.clip_draw(int(eru.frame) * 150, 0, 150, 150, eru.x, eru.y, Eru_Size, Eru_Size)
-        eru.hp_draw()
+def collide(a, b):
+    left_a, bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b: return False
+    if bottom_a > top_b: return False
 
 
 class MoveState:
@@ -78,10 +49,10 @@ class MoveState:
     @staticmethod
     def exit(eru, event):
         if event == ONE:
-            if eru.bullet_atk_upgrade < 5:
+            if eru.bullet_atk_upgrade < 4:
                 eru.bullet_atk_upgrade += 1
         if event == TWO:
-            if eru.bullet_speed_upgrade < 5:
+            if eru.bullet_speed_upgrade < 4:
                 eru.bullet_speed_upgrade += 1
 
     @staticmethod
@@ -93,6 +64,7 @@ class MoveState:
         eru.distance += game_framework.frame_time * game_world.SPEED_PPS
 
         eru.bullet_timer += game_framework.frame_time * 10
+
         if int(eru.bullet_timer) >= 3 - eru.bullet_speed_upgrade * 0.5:
             eru.bullet_shoot()
             eru.bullet_timer = 0
@@ -101,15 +73,15 @@ class MoveState:
     def draw(eru):
         eru.image.clip_draw(int(eru.frame) * 150, 0, 150, 150, eru.x, eru.y, Eru_Size, Eru_Size)
         eru.hp_draw()
+        eru.font.draw(game_world.WIDTH * 0.7, game_world.HEIGHT - 50,
+                       '%10.0f M' % (eru.distance - (eru.distance % 10)), (255, 255, 0))
+        draw_rectangle(*eru.get_bb())
 
 
 next_state_table = {
-    IdleState: {RIGHT_UP: MoveState, LEFT_UP: MoveState,
-                RIGHT_DOWN: MoveState, LEFT_DOWN: MoveState,
-                ONE : IdleState, TWO : IdleState},
-    MoveState: {RIGHT_UP: IdleState, LEFT_UP: IdleState,
-                LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState,
-                ONE : MoveState, TWO : MoveState}
+    MoveState: {RIGHT_UP: MoveState, LEFT_UP: MoveState,
+                LEFT_DOWN: MoveState, RIGHT_DOWN: MoveState,
+                ONE: MoveState, TWO: MoveState}
 }
 
 
@@ -137,10 +109,15 @@ class Eru:
         self.y = 100
         self.hp = 3
         self.distance = 0
+
+        self.bullets = []
+        self.bullets_number = 0
         self.bullet_atk_upgrade = 1
         self.bullet_speed_upgrade = 1
+
+
         self.event_que = []
-        self.cur_state = IdleState
+        self.cur_state = MoveState
         self.cur_state.enter(self, None)
         self.font = load_font('NanumGothicExtraBold.TTF', 30)
 
@@ -148,8 +125,7 @@ class Eru:
         return self.x - Eru_Size * 0.2, self.y - Eru_Size * 0.25, self.x + Eru_Size * 0.2, self.y + Eru_Size * 0.25
 
     def bullet_shoot(self):
-        bullet = EruBullet(self.x, self.bullet_atk_upgrade, self.bullet_speed_upgrade)
-        game_world.add_object(bullet, 1)
+        self.bullets += [EruBullet()]
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -164,9 +140,6 @@ class Eru:
 
     def draw(self):
         self.cur_state.draw(self)
-        self.font.draw(game_world.WIDTH * 0.7, game_world.HEIGHT - 50,
-                       '%10.0f M' % (self.distance - (self.distance % 10)), (255, 255, 0))
-        draw_rectangle(*self.get_bb())
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
@@ -174,18 +147,5 @@ class Eru:
             self.add_event(key_event)
 
     def hp_draw(self):
-        if self.hp == 3:
-            self.Full_image.draw(300, game_world.HEIGHT - 50)
-            self.Full_image.draw(350, game_world.HEIGHT - 50)
-            self.Full_image.draw(400, game_world.HEIGHT - 50)
-
-        elif self.hp == 2:
-            self.Full_image.draw(300, game_world.HEIGHT - 50)
-            self.Full_image.draw(350, game_world.HEIGHT - 50)
-            self.Empty_image.draw(400, game_world.HEIGHT - 50)
-
-        elif self.hp == 1:
-            self.Full_image.draw(300, game_world.HEIGHT - 50)
-            self.Empty_image.draw(350, game_world.HEIGHT - 50)
-            self.Empty_image.draw(400, game_world.HEIGHT - 50)
-
+        [self.Full_image.draw(300 + 50 * i, game_world.HEIGHT - 50) for i in range(self.hp)]
+        [self.Empty_image.draw(300 + 50 * i, game_world.HEIGHT - 50) for i in range(self.hp, 3)]

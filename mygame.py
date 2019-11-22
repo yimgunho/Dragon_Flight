@@ -8,6 +8,6 @@ os.chdir('.//image')
 WIDTH = 750
 HEIGHT = 900
 
-pico2d.open_canvas(WIDTH, HEIGHT)
+pico2d.open_canvas(WIDTH, HEIGHT, sync=True)
 game_framework.run(title_state)
 pico2d.close_canvas()
