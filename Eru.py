@@ -3,6 +3,7 @@ from pico2d import *
 import game_framework
 import game_world
 from EruBullet import EruBullet
+import title_state
 
 Eru_Size = 200
 
@@ -69,6 +70,13 @@ class MoveState:
             eru.bullet_shoot()
             eru.bullet_timer = 0
 
+        if eru.hptimer > 0:
+            eru.hptimer -= game_framework.frame_time
+
+        if eru.hp <= 0:
+            game_framework.change_state(title_state)
+
+
     @staticmethod
     def draw(eru):
         eru.image.clip_draw(int(eru.frame) * 150, 0, 150, 150, eru.x, eru.y, Eru_Size, Eru_Size)
@@ -76,6 +84,9 @@ class MoveState:
         eru.font.draw(game_world.WIDTH * 0.7, game_world.HEIGHT - 50,
                        '%10.0f M' % (eru.distance - (eru.distance % 10)), (255, 255, 0))
         draw_rectangle(*eru.get_bb())
+
+        if 0.4 <= eru.hptimer <= 0.6 or 0.8 <= eru.hptimer <= 1:
+            eru.damage_image.draw(eru.x + 50, eru.y + 70)
 
 
 next_state_table = {
@@ -89,18 +100,14 @@ class Eru:
     image = None
     Full_image = None
     Empty_image = None
+    damage_image = None
 
     def __init__(self):
         if Eru.image == None:
             Eru.image = load_image('Eru.png')
-
-        self.damage = load_image('damage.png')
-        self.hit_effect = load_image('hit_effect.png')
-
-        if Eru.Full_image is None:
-            self.Full_image = load_image('hp_heart_01.png')
-        if Eru.Empty_image is None:
-            self.Empty_image = load_image('hp_heart_02.png')
+            Eru.Full_image = load_image('hp_heart_01.png')
+            Eru.Empty_image = load_image('hp_heart_02.png')
+            Eru.damage_image = load_image('damage.png')
 
         self.velocity = 0
         self.frame = 0
@@ -108,6 +115,7 @@ class Eru:
         self.x = 350
         self.y = 100
         self.hp = 3
+        self.hptimer = 0
         self.distance = 0
 
         self.bullets = []
@@ -149,3 +157,6 @@ class Eru:
     def hp_draw(self):
         [self.Full_image.draw(300 + 50 * i, game_world.HEIGHT - 50) for i in range(self.hp)]
         [self.Empty_image.draw(300 + 50 * i, game_world.HEIGHT - 50) for i in range(self.hp, 3)]
+
+    def get_bullets(self):
+        return self.bullets

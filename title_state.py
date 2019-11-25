@@ -3,31 +3,29 @@ from pico2d import *
 
 import game_world
 import main_state
-from Ground import Ground, WIDTH, HEIGHT
-from Title import Eru_Illustration, Game_Name
+from Ground import Ground
+from Title import Eru_Illustration, Game_Name, Game_Start
 
 game_name = "TitleState"
 background = None
 eru_illustration = None
-game_name = None
-start_space = None
-feeling = None
-character_move = 0
-character_up = True
-count = 0
-start_time = 0.0
-start_draw = True
-velocity = 100
+name = None
+game_start = None
 
 
 def enter():
-    global eru_illustration, background, game_name, start_space, feeling
+    global eru_illustration, background, name, game_start
     background = Ground(0)
-    eru_illustration = Eru_Illustration()
-    game_name = Game_Name()
     game_world.add_object(background, 0)
-    game_world.add_object(game_name, 1)
+
+    eru_illustration = Eru_Illustration()
     game_world.add_object(eru_illustration, 1)
+
+    name = Game_Name()
+    game_world.add_object(name, 1)
+
+    game_start = Game_Start()
+    game_world.add_object(game_start, 1)
 
 
 def exit():
