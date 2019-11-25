@@ -11,6 +11,7 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
+
 bullet = []
 
 RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, ONE, TWO = range(6)
@@ -83,10 +84,17 @@ class MoveState:
         eru.hp_draw()
         eru.font.draw(game_world.WIDTH * 0.7, game_world.HEIGHT - 50,
                        '%10.0f M' % (eru.distance - (eru.distance % 10)), (255, 255, 0))
+
+        eru.gold_image.draw(game_world.WIDTH * 0.05, game_world.HEIGHT - 50, 40, 40)
+        eru.font.draw(game_world.WIDTH * 0.1, game_world.HEIGHT - 50,
+                      ': %1.0f' % (eru.gold), (255, 255, 0))
+
         draw_rectangle(*eru.get_bb())
 
         if 0.4 <= eru.hptimer <= 0.6 or 0.8 <= eru.hptimer <= 1:
             eru.damage_image.draw(eru.x + 50, eru.y + 70)
+            eru.damage_image2.draw(game_world.WIDTH * 0.5, game_world.HEIGHT * 0.5, game_world.WIDTH, game_world.HEIGHT)
+
 
 
 next_state_table = {
@@ -101,6 +109,8 @@ class Eru:
     Full_image = None
     Empty_image = None
     damage_image = None
+    damage_image2 = None
+    gold_image = None
 
     def __init__(self):
         if Eru.image == None:
@@ -108,6 +118,8 @@ class Eru:
             Eru.Full_image = load_image('hp_heart_01.png')
             Eru.Empty_image = load_image('hp_heart_02.png')
             Eru.damage_image = load_image('damage.png')
+            Eru.damage_image2 = load_image('damage2.png')
+            Eru.gold_image = load_image('gold.png')
 
         self.velocity = 0
         self.frame = 0
@@ -117,6 +129,7 @@ class Eru:
         self.hp = 3
         self.hptimer = 0
         self.distance = 0
+        self.gold = 0
 
         self.bullets = []
         self.bullets_number = 0

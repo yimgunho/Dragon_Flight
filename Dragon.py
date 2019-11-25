@@ -5,8 +5,15 @@ import game_framework
 import game_world
 from Boom import Boom
 from Eru import FRAMES_PER_ACTION, ACTION_PER_TIME
+from Gold import Gold
 
 Dragon_Size = 150
+
+PIXEL_PER_METER = (1.0 / 0.3)  # 10 pixel 30 cm
+DRAGON_SPEED_KMPH = 5.0  # Km / Hour
+DRAGON_SPEED_MPM = (DRAGON_SPEED_KMPH * 1000.0 / 60.0)
+DRAGON_SPEED_MPS = (DRAGON_SPEED_MPM / 60.0)
+DRAGON_SPEED_PPS = (DRAGON_SPEED_MPS * PIXEL_PER_METER)
 
 
 def collide(a, b):
@@ -39,6 +46,7 @@ class Dragon:
         self.hp = 40
         self.stage = 1
         self.boom = None
+        self.gold = None
 
     def get_bb(self):
         return self.x - Dragon_Size * 0.5, self.y - Dragon_Size * 0.5, self.x + Dragon_Size * 0.5, self.y + Dragon_Size * 0.5
@@ -46,13 +54,14 @@ class Dragon:
     def update(self):
         dragons = main_state.get_dragons()
         eru = main_state.get_eru()
-        self.y -= game_world.SPEED_PPS * 0.04
+        self.y -= DRAGON_SPEED_PPS
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
 
         if self.y < -Dragon_Size or self.hp <= 0:
             dragons.remove(self)
             game_world.remove_object(self)
             self.boom = Boom(self.x, self.y)
+            self.gold = Gold(self.x, self.y)
 
         if collide(eru, self):
             eru.hp -= 1
@@ -60,6 +69,7 @@ class Dragon:
             dragons.remove(self)
             game_world.remove_object(self)
             self.boom = Boom(self.x, self.y)
+            self.gold = Gold(self.x, self.y)
 
 
     def damage(self, atk):
