@@ -31,7 +31,7 @@ class Dragon:
     images = None
     HPimage = None
 
-    def __init__(self, x):
+    def __init__(self, x, stage):
         if Dragon.images == None:
             Dragon.images = []
             Dragon.images += [load_image('dragon01.png')]
@@ -43,8 +43,8 @@ class Dragon:
         self.x = x * 150 + 75
         self.frame = 0
         self.y = game_world.HEIGHT + Dragon_Size
-        self.hp = 40
-        self.stage = 1
+        self.hp = 40 + stage * 40
+        self.stage_level = stage
         self.boom = None
         self.gold = None
 
@@ -52,6 +52,7 @@ class Dragon:
         return self.x - Dragon_Size * 0.5, self.y - Dragon_Size * 0.5, self.x + Dragon_Size * 0.5, self.y + Dragon_Size * 0.5
 
     def update(self):
+
         dragons = main_state.get_dragons()
         eru = main_state.get_eru()
         self.y -= DRAGON_SPEED_PPS
@@ -63,7 +64,11 @@ class Dragon:
             self.boom = Boom(self.x, self.y)
             self.gold = Gold(self.x, self.y)
 
-        if collide(eru, self):
+        elif self.stage_level >= 4:
+            dragons.remove(self)
+            game_world.remove_object(self)
+
+        elif collide(eru, self):
             eru.hp -= 1
             eru.hptimer = 1
             dragons.remove(self)
@@ -72,11 +77,13 @@ class Dragon:
             self.gold = Gold(self.x, self.y)
 
 
+
     def damage(self, atk):
         self.hp -= atk
 
     def draw(self):
-        self.images[self.stage].clip_draw(int(self.frame) * 150, 0, 150, 150, self.x, self.y, Dragon_Size, Dragon_Size)
-        draw_rectangle(*self.get_bb())
-        self.HPimage.clip_draw(0, 0, 100, 12, self.x, self.y - 100, self.hp, 12)
+        if self.stage_level < 4:
+            self.images[self.stage_level].clip_draw(int(self.frame) * 150, 0, 150, 150, self.x, self.y, Dragon_Size, Dragon_Size)
+            draw_rectangle(*self.get_bb())
+            self.HPimage.clip_draw(0, 0, 100, 12, self.x, self.y - 100, self.hp, 12)
 

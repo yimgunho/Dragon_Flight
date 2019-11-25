@@ -42,6 +42,9 @@ def get_eru():
 def get_dragons():
     return dragons
 
+def get_ground():
+    return ground
+
 
 def enter():
     global ground
@@ -53,7 +56,7 @@ def enter():
     game_world.add_object(eru, 1)
 
     global dragons
-    dragons = [Dragon(i) for i in range(5)]
+    dragons = [Dragon(i, eru.stage_level) for i in range(5)]
     game_world.add_objects(dragons, 1)
 
 
@@ -90,8 +93,8 @@ def update():
     for game_object in game_world.all_objects():
         game_object.update()
 
-    if len(dragons) <= 0:
-        dragons = [Dragon(i) for i in range(5)]
+    if len(dragons) <= 0 and eru.stage_level < 4:
+        dragons = [Dragon(i, eru.stage_level) for i in range(5)]
         game_world.add_objects(dragons, 1)
 
 
