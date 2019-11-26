@@ -35,7 +35,7 @@ class Boss:
 
         self.x = game_world.WIDTH * 0.5
         self.frame = 0
-        self.y = game_world.HEIGHT * 0.8
+        self.y = game_world.HEIGHT * 0.75
         self.hp = 500
         self.boom = None
 

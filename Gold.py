@@ -43,7 +43,7 @@ class Gold:
 
         if collide(eru, self):
             game_world.remove_object(self)
-            eru.gold += eru.stage_level + 1
+            eru.gold += 1
 
         if self.y < -20:
             game_world.remove_object(self)

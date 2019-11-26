@@ -8,6 +8,9 @@ import main_state
 
 Eru_Size = 200
 
+WIDTH = 750
+HEIGHT = 900
+
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
@@ -174,7 +177,7 @@ class Eru:
         self.velocity = 0
         self.frame = 0
         self.bullet_timer = 0
-        self.x = 350
+        self.x = WIDTH * 0.5
         self.y = 100
         self.hp = 3
         self.hptimer = 0
@@ -220,8 +223,8 @@ class Eru:
             self.add_event(key_event)
 
     def hp_draw(self):
-        [self.Full_image.draw(300 + 50 * i, game_world.HEIGHT - 50) for i in range(self.hp)]
-        [self.Empty_image.draw(300 + 50 * i, game_world.HEIGHT - 50) for i in range(self.hp, 3)]
+        [self.Full_image.draw(325 + 50 * i, game_world.HEIGHT - 50) for i in range(self.hp)]
+        [self.Empty_image.draw(325 + 50 * i, game_world.HEIGHT - 50) for i in range(self.hp, 3)]
 
     def get_bullets(self):
         return self.bullets
