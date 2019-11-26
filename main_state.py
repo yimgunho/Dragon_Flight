@@ -8,6 +8,7 @@ import game_world
 
 import title_state
 import pause_state
+from Boss import Boss
 from Ground import Ground
 from Eru import Eru
 from EruBullet import EruBullet
@@ -20,6 +21,7 @@ game_name = "MainState"
 ground = None
 eru = None
 heart_point = None
+boss = None
 dragons = []
 bullets = []
 
@@ -44,6 +46,9 @@ def get_dragons():
 
 def get_ground():
     return ground
+
+def get_boss():
+    return boss
 
 
 def enter():
@@ -89,13 +94,17 @@ def handle_events():
 
 
 def update():
-    global dragons
+    global dragons, boss
     for game_object in game_world.all_objects():
         game_object.update()
 
     if len(dragons) <= 0 and eru.stage_level < 4:
         dragons = [Dragon(i, eru.stage_level) for i in range(5)]
         game_world.add_objects(dragons, 1)
+
+    elif eru.stage_level >= 4 and boss is None:
+        boss = Boss()
+        game_world.add_object(boss, 1)
 
 
 def draw():

@@ -48,6 +48,7 @@ class EruBullet:
     def update(self):
         eru = main_state.get_eru()
         dragons = main_state.get_dragons()
+        boss = main_state.get_boss()
 
         self.y += BULLET_SPEED_PPS
 
@@ -60,11 +61,12 @@ class EruBullet:
                 dragon.hp -= self.atk
                 game_world.remove_object(self)
 
+        if boss is not None and collide(boss, self):
+            boss.hp -= self.atk * 0.1
+            game_world.remove_object(self)
 
     def draw(self):
-        self.images[self.bullet_atk_upgrade].draw(self.x, self.y, 40 + self.bullet_atk_upgrade * 20, 60 + self.bullet_atk_upgrade * 20)
+        self.images[self.bullet_atk_upgrade].draw(self.x, self.y, 40 + self.bullet_atk_upgrade * 20,
+                                                  60 + self.bullet_atk_upgrade * 20)
 
         draw_rectangle(*self.get_bb())
-
-
-

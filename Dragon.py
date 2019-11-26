@@ -52,9 +52,9 @@ class Dragon:
         return self.x - Dragon_Size * 0.5, self.y - Dragon_Size * 0.5, self.x + Dragon_Size * 0.5, self.y + Dragon_Size * 0.5
 
     def update(self):
-
         dragons = main_state.get_dragons()
         eru = main_state.get_eru()
+
         self.y -= DRAGON_SPEED_PPS
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
 
