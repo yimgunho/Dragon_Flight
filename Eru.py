@@ -12,10 +12,9 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
-
 bullet = []
 
-RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, ONE, TWO, ZERO, NINE = range(8)
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, ONE, TWO, THREE, ZERO, NINE = range(9)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
@@ -24,6 +23,7 @@ key_event_table = {
     (SDL_KEYUP, SDLK_LEFT): LEFT_UP,
     (SDL_KEYDOWN, SDLK_1): ONE,
     (SDL_KEYDOWN, SDLK_2): TWO,
+    (SDL_KEYDOWN, SDLK_3): THREE,
     (SDL_KEYDOWN, SDLK_0): ZERO,
     (SDL_KEYDOWN, SDLK_9): NINE
 }
@@ -63,6 +63,11 @@ class MoveState:
                 eru.gold -= eru.bullet_speed_upgrade * 10
                 eru.bullet_speed_upgrade += 1
 
+        if event == THREE and eru.hp < 3 and eru.gold >= eru.heart_upgrade * 10:
+            eru.gold -= eru.heart_upgrade * 10
+            eru.heart_upgrade += 1
+            eru.hp += 1
+
         if event == ZERO:
             dragons = main_state.get_dragons()
             ground = main_state.get_ground()
@@ -96,7 +101,6 @@ class MoveState:
         if eru.hp <= 0:
             game_framework.change_state(title_state)
 
-
         dragons = main_state.get_dragons()
         ground = main_state.get_ground()
         if eru.distance >= eru.stage_level * 5000 + 5000 and eru.stage_level < 4:
@@ -111,7 +115,7 @@ class MoveState:
         eru.image.clip_draw(int(eru.frame) * 150, 0, 150, 150, eru.x, eru.y, Eru_Size, Eru_Size)
         eru.hp_draw()
         eru.font.draw(game_world.WIDTH * 0.7, game_world.HEIGHT - 50,
-                       '%10.0f M' % (eru.distance - (eru.distance % 10)), (255, 255, 0))
+                      '%10.0f M' % (eru.distance - (eru.distance % 10)), (255, 255, 0))
 
         eru.gold_image.draw(game_world.WIDTH * 0.05, game_world.HEIGHT - 50, 40, 40)
         eru.font.draw(game_world.WIDTH * 0.1, game_world.HEIGHT - 50,
@@ -125,6 +129,10 @@ class MoveState:
         eru.font.draw(game_world.WIDTH * 0.1, game_world.HEIGHT - 150,
                       ': %1.0f' % (eru.bullet_speed_upgrade), (255, 255, 0))
 
+        eru.heart_image.clip_draw(120, 0, 128, 128, game_world.WIDTH * 0.05 + 7, game_world.HEIGHT - 200, 50, 50)
+        eru.font.draw(game_world.WIDTH * 0.1, game_world.HEIGHT - 200,
+                      ': %1.0f' % (eru.heart_upgrade), (255, 255, 0))
+
         draw_rectangle(*eru.get_bb())
 
         if 0.4 <= eru.hptimer <= 0.6 or 0.8 <= eru.hptimer <= 1:
@@ -132,12 +140,11 @@ class MoveState:
             eru.damage_image2.draw(game_world.WIDTH * 0.5, game_world.HEIGHT * 0.5, game_world.WIDTH, game_world.HEIGHT)
 
 
-
 next_state_table = {
     MoveState: {RIGHT_UP: MoveState, LEFT_UP: MoveState,
                 LEFT_DOWN: MoveState, RIGHT_DOWN: MoveState,
-                ONE: MoveState, TWO: MoveState, ZERO: MoveState
-                , NINE: MoveState}
+                ONE: MoveState, TWO: MoveState, THREE: MoveState,
+                ZERO: MoveState, NINE: MoveState}
 }
 
 
@@ -150,6 +157,7 @@ class Eru:
     gold_image = None
     atk_image = None
     speed_image = None
+    heart_image = None
 
     def __init__(self):
         if Eru.image == None:
@@ -161,6 +169,7 @@ class Eru:
             Eru.gold_image = load_image('gold.png')
             Eru.atk_image = load_image('atk.png')
             Eru.speed_image = load_image('speed.png')
+            Eru.heart_image = load_image('heart.png')
 
         self.velocity = 0
         self.frame = 0
@@ -178,7 +187,7 @@ class Eru:
         self.bullets_number = 0
         self.bullet_atk_upgrade = 1
         self.bullet_speed_upgrade = 1
-
+        self.heart_upgrade = 1
 
         self.event_que = []
         self.cur_state = MoveState
