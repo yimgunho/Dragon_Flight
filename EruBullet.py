@@ -1,3 +1,5 @@
+from math import radians
+
 from pico2d import *
 import main_state
 
@@ -21,6 +23,9 @@ def collide(a, b):
     return True
 
 
+bullet_level = {0: (79, 182), 1: (90, 182), 2: (101, 151), 3: (144, 148), 4: (169, 199)}
+
+
 class EruBullet:
     images = None
 
@@ -28,45 +33,47 @@ class EruBullet:
         eru = main_state.get_eru()
         if EruBullet.images == None:
             EruBullet.images = []
-            EruBullet.images += [load_image('Erubullet_01.png')]
-            EruBullet.images += [load_image('Erubullet_02.png')]
-            EruBullet.images += [load_image('Erubullet_03.png')]
-            EruBullet.images += [load_image('Erubullet_04.png')]
-            EruBullet.images += [load_image('Erubullet_05.png')]
+            EruBullet.images += [load_image('Erubullet1.png')]
+            EruBullet.images += [load_image('Erubullet2.png')]
+            EruBullet.images += [load_image('Erubullet3.png')]
+            EruBullet.images += [load_image('Erubullet4.png')]
+            EruBullet.images += [load_image('Erubullet5.png')]
 
         self.x = eru.x
-        self.y = 200
-        self.bullet_atk_upgrade = eru.bullet_atk_upgrade
-        self.atk = eru.bullet_atk_upgrade * 20
-        self.bullet_speed_upgrade = eru.bullet_speed_upgrade
+        self.attack_upgrade_value = eru.attack_upgrade_value
+        self.speed_upgrade_value = eru.speed_upgrade_value
+        self.attack_damage = (eru.attack_upgrade_value + 1) * 20
+        self.y = 150 + bullet_level[self.attack_upgrade_value][1] / 2
         game_world.add_object(self, 1)
 
     def get_bb(self):
-        return self.x - 20 - self.bullet_atk_upgrade * 10, self.y - 30 - self.bullet_atk_upgrade * 10, \
-               self.x + 20 + self.bullet_atk_upgrade * 10, self.y + 30 + self.bullet_atk_upgrade * 10
+        return self.x - bullet_level[self.attack_upgrade_value][0] / 2, \
+               self.y - bullet_level[self.attack_upgrade_value][1] / 2, \
+               self.x + bullet_level[self.attack_upgrade_value][0] / 2, \
+               self.y + bullet_level[self.attack_upgrade_value][1] / 2
 
     def update(self):
-        eru = main_state.get_eru()
         dragons = main_state.get_dragons()
-        boss = main_state.get_boss()
 
         self.y += BULLET_SPEED_PPS
 
-        if self.y > game_world.HEIGHT:
-            game_world.remove_object(self)
-            eru.bullets.remove(self)
-
         for dragon in dragons:
             if collide(dragon, self):
-                dragon.hp -= self.atk
-                game_world.remove_object(self)
+                dragon.hp -= self.attack_damage / (dragon.stage_level + 1)
+                if dragon.hp <= 0:
+                    dragon.eraser()
+                self.eraser()
 
-        if boss is not None and collide(boss, self):
-            boss.hp -= self.atk * 0.1
-            game_world.remove_object(self)
+        if self.y > game_world.HEIGHT:
+            self.eraser()
 
     def draw(self):
-        self.images[self.bullet_atk_upgrade].draw(self.x, self.y, 40 + self.bullet_atk_upgrade * 20,
-                                                  60 + self.bullet_atk_upgrade * 20)
-
+        self.images[self.attack_upgrade_value].rotate_draw(radians(90.0),
+                                                           self.x, self.y,
+                                                           bullet_level[self.attack_upgrade_value][1],
+                                                           bullet_level[self.attack_upgrade_value][0])
         draw_rectangle(*self.get_bb())
+
+    def eraser(self):
+        #bullets = main_state.get_bullets()
+        game_world.remove_object(self)
