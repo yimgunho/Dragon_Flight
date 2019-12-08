@@ -5,13 +5,6 @@ objects = [[], []]
 WIDTH = 750
 HEIGHT = 900
 
-PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-SPEED_KMPH = 10.0  # Km / Hour
-SPEED_MPM = (SPEED_KMPH * 1000.0 / 60.0)
-SPEED_MPS = (SPEED_MPM / 60.0)
-SPEED_PPS = (SPEED_MPS * PIXEL_PER_METER)
-
-
 def add_object(o, layer):
     objects[layer].append(o)
 

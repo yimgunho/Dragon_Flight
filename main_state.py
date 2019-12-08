@@ -44,11 +44,17 @@ def get_eru():
 def get_dragons():
     return dragons
 
+
 def get_ground():
     return ground
 
+
 def get_boss():
     return boss
+
+
+def get_bullets():
+    return bullets
 
 
 def enter():
@@ -60,9 +66,15 @@ def enter():
     eru = Eru()
     game_world.add_object(eru, 1)
 
+    global bullets
+    game_world.add_objects(bullets, 1)
+
     global dragons
     dragons = [Dragon(i, eru.stage_level) for i in range(5)]
     game_world.add_objects(dragons, 1)
+
+    global boss
+    boss = Boss()
 
 
 def exit():
@@ -101,10 +113,6 @@ def update():
     if len(dragons) <= 0 and eru.stage_level < 4:
         dragons = [Dragon(i, eru.stage_level) for i in range(5)]
         game_world.add_objects(dragons, 1)
-
-    elif eru.stage_level >= 4 and boss is None:
-        boss = Boss()
-        game_world.add_object(boss, 1)
 
 
 def draw():
