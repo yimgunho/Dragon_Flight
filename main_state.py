@@ -113,6 +113,8 @@ def exit():
         bullet.eraser()
     for dragon in reversed(dragons):
         dragon.delite()
+    global fire_timer
+    fire_timer = 0
 
 
 def pause():
@@ -142,7 +144,7 @@ def handle_events():
 def update():
     global dragons, boss, record, fire_timer, fireball
 
-    if fire_timer >= 1000:
+    if fire_timer == 1000 - eru.stage_level * 100:
         fireball = FireBall()
         game_world.add_object(fireball, 1)
         fire_timer = 0

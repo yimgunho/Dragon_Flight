@@ -76,7 +76,7 @@ class MoveState:
             eru.remain_hp += 1
 
         if event == ZERO:
-            eru.distance += 5000
+            eru.distance += 2500
             for dragon in reversed(dragons):
                 dragon.delite()
 
@@ -102,7 +102,7 @@ class MoveState:
 
         dragons = main_state.get_dragons()
         ground = main_state.get_ground()
-        if eru.distance >= eru.stage_level * 5000 + 5000 and eru.stage_level < 4:
+        if eru.distance >= eru.stage_level * 2500 + 2500 and eru.stage_level < 4:
             ground.stage_level += 1
             eru.stage_level += 1
             for dragon in reversed(dragons):
@@ -119,7 +119,7 @@ class MoveState:
         eru.upgrade_draw()
         eru.crash_draw()
 
-        draw_rectangle(*eru.get_bb())
+        #draw_rectangle(*eru.get_bb())
 
 
 next_state_table = {
@@ -195,7 +195,7 @@ class Eru:
         self.font = load_font('./image/NanumGothicExtraBold.TTF', 30)
 
     def get_bb(self):
-        return self.x - Eru_Size * 0.2, self.y - Eru_Size * 0.25, self.x + Eru_Size * 0.2, self.y + Eru_Size * 0.25
+        return self.x - Eru_Size * 0.1, self.y - Eru_Size * 0.1, self.x + Eru_Size * 0.1, self.y + Eru_Size * 0.1
 
     def bullet_shoot(self):
         bullets = main_state.get_bullets()

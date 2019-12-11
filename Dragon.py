@@ -73,7 +73,7 @@ class Dragon:
     def draw(self):
         if self.stage_level < 4:
             self.images[self.stage_level].clip_draw(int(self.frame) * 150, 0, 150, 150, self.x, self.y, self.size, self.size)
-            draw_rectangle(*self.get_bb())
+            #draw_rectangle(*self.get_bb())
             self.HPimage.clip_draw(0, 0, 100, 12, self.x, self.y - 100, self.hp, 12)
 
     def eraser(self):

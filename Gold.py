@@ -33,7 +33,7 @@ class Gold:
         game_world.add_object(self, 1)
 
     def get_bb(self):
-        return self.x - 25, self.y - 25, self.x + 25, self.y + 25
+        return self.x - 50, self.y - 50, self.x + 50, self.y + 50
 
     def update(self):
         global GOLD_SPEED_PPS
@@ -43,7 +43,7 @@ class Gold:
 
         if collide(eru, self):
             game_world.remove_object(self)
-            eru.gold += 1
+            eru.gold += eru.stage_level + 1
 
         if self.y < -20:
             game_world.remove_object(self)
@@ -52,4 +52,4 @@ class Gold:
 
     def draw(self):
         self.image.draw(self.x, self.y, 50, 50)
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())

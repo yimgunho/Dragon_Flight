@@ -4,7 +4,7 @@ import main_state
 import game_world
 
 PIXEL_PER_METER = (1.0 / 0.3)  # 10 pixel 30 cm
-Fire_SPEED_KMPH = 5.0  # Km / Hour
+Fire_SPEED_KMPH = 7.0  # Km / Hour
 Fire_SPEED_MPM = (Fire_SPEED_KMPH * 1000.0 / 60.0)
 Fire_SPEED_MPS = (Fire_SPEED_MPM / 60.0)
 Fire_SPEED_PPS = (Fire_SPEED_MPS * PIXEL_PER_METER)
@@ -34,22 +34,25 @@ class FireBall:
         self.timer = 0
 
     def get_bb(self):
-        return self.x - 50, self.y - 80, self.x + 50, self.y + 80
+        return self.x - 55, self.y - 80, self.x + 55, self.y + 80
 
     def update(self):
         eru = main_state.get_eru()
 
-        self.y -= Fire_SPEED_PPS
+        self.y -= Fire_SPEED_PPS * eru.stage_level * 0.2 + Fire_SPEED_PPS
 
         if collide(eru, self):
             eru.remain_hp -= 1
             eru.crash_effect_timer = 1
             self.eraser()
 
+        elif self.y <= -100:
+            self.eraser()
+
 
     def draw(self):
         self.image.draw(self.x, self.y, 100, 160)
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
 
     def eraser(self):
         game_world.remove_object(self)

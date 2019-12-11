@@ -74,8 +74,8 @@ class BossBullet:
             self.eraser()
 
     def draw(self):
-        self.image.draw(self.x, self.y)
-        draw_rectangle(*self.get_bb())
+        self.image.draw(self.x, self.y, 80, 80)
+        #draw_rectangle(*self.get_bb())
 
     def eraser(self):
         bossbullets = main_state.get_bossbullets()

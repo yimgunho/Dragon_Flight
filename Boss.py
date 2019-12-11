@@ -56,14 +56,14 @@ class Boss:
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
         self.shoot_timer += 1
-        if self.shoot_timer >= 100:
+        if self.shoot_timer >= 80:
             self.shoot_timer = 0
             self.bullet_shoot()
 
     def draw(self):
         self.image.clip_draw(0, int(self.frame) * 250, 350, 250, self.x, self.y, game_world.WIDTH * 0.8,
                              game_world.HEIGHT * 0.3)
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
         self.HPimage.clip_draw(0, 0, 100, 12, self.x, self.y - 100, self.hp, 12)
         if self.hp <= 0:
             self.game_clear.clip_draw(0, 0, 485, 100, game_world.WIDTH * 0.5, game_world.HEIGHT * 0.5)

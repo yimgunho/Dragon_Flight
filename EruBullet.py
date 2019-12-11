@@ -1,4 +1,5 @@
 from math import radians
+from random import randint
 
 from pico2d import *
 import main_state
@@ -45,6 +46,7 @@ class EruBullet:
         self.attack_damage = (eru.attack_upgrade_value + 1) * 20
         self.y = 150 + bullet_level[self.attack_upgrade_value][1] / 2
         game_world.add_object(self, 1)
+        self.crush_count = 0
 
     def get_bb(self):
         return self.x - bullet_level[self.attack_upgrade_value][0] / 2, \
@@ -65,12 +67,12 @@ class EruBullet:
                     dragon.hp -= self.attack_damage / (dragon.stage_level + 1)
                     if dragon.hp <= 0:
                         dragon.eraser()
-                    self.eraser()
-                    break
+                        if randint(0, 4) == 2:
+                            eru.gold += 1
+                    self.crush_count += 1
 
-                elif self.y > game_world.HEIGHT:
-                    self.eraser()
-                    break
+        if self.y > game_world.HEIGHT or self.crush_count is not 0:
+            self.eraser()
 
         elif eru.stage_level == 4 and boss is not None:
             if collide(boss, self):
@@ -82,7 +84,7 @@ class EruBullet:
                                                            self.x, self.y,
                                                            bullet_level[self.attack_upgrade_value][1],
                                                            bullet_level[self.attack_upgrade_value][0])
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
 
     def eraser(self):
         bullets = main_state.get_bullets()
