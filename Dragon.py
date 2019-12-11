@@ -58,7 +58,7 @@ class Dragon:
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
 
         if self.stage_level >= 4 or self.y < -self.size:
-            self.eraser()
+            self.delite()
 
         elif collide(eru, self):
             eru.remain_hp -= 1
@@ -82,4 +82,11 @@ class Dragon:
         game_world.remove_object(self)
         self.boom = Boom(self.x, self.y)
         self.gold = Gold(self.x, self.y)
+
+    def delite(self):
+        dragons = main_state.get_dragons()
+        dragons.remove(self)
+        game_world.remove_object(self)
+
+
 

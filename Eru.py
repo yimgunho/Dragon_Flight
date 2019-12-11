@@ -58,6 +58,8 @@ class MoveState:
 
     @staticmethod
     def exit(eru, event):
+        dragons = main_state.get_dragons()
+
         if event == ONE:
             if eru.attack_upgrade_value < 4 and eru.gold >= (eru.attack_upgrade_value + 1) * 10:
                 eru.gold -= (eru.attack_upgrade_value + 1) * 10
@@ -75,6 +77,8 @@ class MoveState:
 
         if event == ZERO:
             eru.distance += 5000
+            for dragon in reversed(dragons):
+                dragon.delite()
 
         if event == NINE:
             eru.gold += 100
@@ -101,7 +105,7 @@ class MoveState:
         if eru.distance >= eru.stage_level * 5000 + 5000 and eru.stage_level < 4:
             ground.stage_level += 1
             eru.stage_level += 1
-            for dragon in dragons:
+            for dragon in reversed(dragons):
                 if dragon.stage_level < 4:
                     dragon.stage_level = ground.stage_level
 
@@ -195,7 +199,7 @@ class Eru:
 
     def bullet_shoot(self):
         bullets = main_state.get_bullets()
-        bullets += [EruBullet()]
+        bullets.append(EruBullet())
 
     def add_event(self, event):
         self.event_que.insert(0, event)

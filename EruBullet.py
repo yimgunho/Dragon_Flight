@@ -54,18 +54,28 @@ class EruBullet:
 
     def update(self):
         dragons = main_state.get_dragons()
+        boss = main_state.get_boss()
+        eru = main_state.get_eru()
 
         self.y += BULLET_SPEED_PPS
 
-        for dragon in dragons:
-            if collide(dragon, self):
-                dragon.hp -= self.attack_damage / (dragon.stage_level + 1)
-                if dragon.hp <= 0:
-                    dragon.eraser()
-                self.eraser()
+        if eru.stage_level < 4:
+            for dragon in reversed(dragons):
+                if collide(dragon, self):
+                    dragon.hp -= self.attack_damage / (dragon.stage_level + 1)
+                    if dragon.hp <= 0:
+                        dragon.eraser()
+                    self.eraser()
+                    break
 
-        if self.y > game_world.HEIGHT:
-            self.eraser()
+                elif self.y > game_world.HEIGHT:
+                    self.eraser()
+                    break
+
+        elif eru.stage_level == 4 and boss is not None:
+            if collide(boss, self):
+                boss.hp -= self.attack_damage / 20
+                self.eraser()
 
     def draw(self):
         self.images[self.attack_upgrade_value].rotate_draw(radians(90.0),
@@ -75,5 +85,6 @@ class EruBullet:
         draw_rectangle(*self.get_bb())
 
     def eraser(self):
-        #bullets = main_state.get_bullets()
+        bullets = main_state.get_bullets()
+        bullets.remove(self)
         game_world.remove_object(self)
