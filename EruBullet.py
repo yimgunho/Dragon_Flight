@@ -33,11 +33,11 @@ class EruBullet:
         eru = main_state.get_eru()
         if EruBullet.images == None:
             EruBullet.images = []
-            EruBullet.images += [load_image('Erubullet1.png')]
-            EruBullet.images += [load_image('Erubullet2.png')]
-            EruBullet.images += [load_image('Erubullet3.png')]
-            EruBullet.images += [load_image('Erubullet4.png')]
-            EruBullet.images += [load_image('Erubullet5.png')]
+            EruBullet.images += [load_image('./image/Erubullet1.png')]
+            EruBullet.images += [load_image('./image/Erubullet2.png')]
+            EruBullet.images += [load_image('./image/Erubullet3.png')]
+            EruBullet.images += [load_image('./image/Erubullet4.png')]
+            EruBullet.images += [load_image('./image/Erubullet5.png')]
 
         self.x = eru.x
         self.attack_upgrade_value = eru.attack_upgrade_value

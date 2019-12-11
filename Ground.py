@@ -15,11 +15,11 @@ class Ground:
     def __init__(self, a):
         if Ground.images == None:
             Ground.images = []
-            Ground.images += [load_image('stage1.jpg')]
-            Ground.images += [load_image('stage2.jpg')]
-            Ground.images += [load_image('stage3.jpg')]
-            Ground.images += [load_image('stage4.jpg')]
-            Ground.images += [load_image('stage5.jpg')]
+            Ground.images += [load_image('./image/stage1.jpg')]
+            Ground.images += [load_image('./image/stage2.jpg')]
+            Ground.images += [load_image('./image/stage3.jpg')]
+            Ground.images += [load_image('./image/stage4.jpg')]
+            Ground.images += [load_image('./image/stage5.jpg')]
 
         self.frame = a
         self.first = HEIGHT * 0.5

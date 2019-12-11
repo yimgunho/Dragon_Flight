@@ -26,7 +26,7 @@ class Gold:
 
     def __init__(self, x, y):
         if Gold.image == None:
-            Gold.image = load_image('gold.png')
+            Gold.image = load_image('./image/gold.png')
 
         self.x = x
         self.y = y

@@ -28,10 +28,10 @@ class Boss:
 
     def __init__(self):
         if Boss.image == None:
-            Boss.image = load_image('boss.png')
-            Boss.HPimage = load_image('hp_gauge.png')
-            Boss.bullet_image = load_image('boss_bullet.png')
-            Boss.game_clear = load_image('game_clear.png')
+            Boss.image = load_image('./image/boss.png')
+            Boss.HPimage = load_image('./image/hp_gauge.png')
+            Boss.bullet_image = load_image('./image/boss_bullet.png')
+            Boss.game_clear = load_image('./image/game_clear.png')
 
         self.x = game_world.WIDTH * 0.5
         self.frame = 0

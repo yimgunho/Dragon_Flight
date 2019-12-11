@@ -9,7 +9,7 @@ FRAMES_PER_ACTION = 6
 
 class Boom:
     def __init__(self, x, y):
-        self.image = load_image('boom.png')
+        self.image = load_image('./image/boom.png')
         self.frame = 0
         self.x = x
         self.y = y

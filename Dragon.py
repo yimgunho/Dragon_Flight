@@ -34,11 +34,11 @@ class Dragon:
     def __init__(self, x, stage):
         if Dragon.images == None:
             Dragon.images = []
-            Dragon.images += [load_image('dragon01.png')]
-            Dragon.images += [load_image('dragon02.png')]
-            Dragon.images += [load_image('dragon03.png')]
-            Dragon.images += [load_image('dragon04.png')]
-            Dragon.HPimage = load_image('hp_gauge.png')
+            Dragon.images += [load_image('./image/dragon01.png')]
+            Dragon.images += [load_image('./image/dragon02.png')]
+            Dragon.images += [load_image('./image/dragon03.png')]
+            Dragon.images += [load_image('./image/dragon04.png')]
+            Dragon.HPimage = load_image('./image/hp_gauge.png')
 
         self.x = x * 150 + 75
         self.frame = 0

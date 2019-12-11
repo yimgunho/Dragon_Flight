@@ -4,7 +4,7 @@ from pico2d import *
 class HPGauge:
 
     def __init__(self, x, y):
-        self.image = load_image('hp_gauge.png')
+        self.image = load_image('./image/hp_gauge.png')
         self.x = x
         self.y = y - 100
         self.hp = None

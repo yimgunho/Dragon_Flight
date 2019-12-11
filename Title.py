@@ -13,7 +13,7 @@ class Eru_Illustration:
 
     def __init__(self):
         if Eru_Illustration.image == None:
-            Eru_Illustration.image = load_image('Eru_Illustration.png')
+            Eru_Illustration.image = load_image('./image/Eru_Illustration.png')
         self.x = game_world.WIDTH * 0.7
         self.y = game_world.HEIGHT * 0.37
         self.dir = 0
@@ -40,7 +40,7 @@ class Game_Name:
 
     def __init__(self):
         if Game_Name.image == None:
-            Game_Name.image = load_image('game_name.png')
+            Game_Name.image = load_image('./image/game_name.png')
         self.x = game_world.WIDTH * 0.5
         self.y = game_world.HEIGHT * 0.75
 
@@ -55,7 +55,7 @@ class Game_Start:
 
     def __init__(self):
         if Game_Start.image == None:
-            Game_Start.image = load_image('game_start.png')
+            Game_Start.image = load_image('./image/game_start.png')
         self.x = game_world.WIDTH * 0.5
         self.y = game_world.HEIGHT * 0.15
         self.timer = 0

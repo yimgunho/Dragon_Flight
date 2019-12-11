@@ -5,6 +5,7 @@ import os
 from pico2d import *
 import game_framework
 import game_world
+import ranking_state
 
 import title_state
 import pause_state
@@ -24,6 +25,7 @@ heart_point = None
 boss = None
 dragons = []
 bullets = []
+record = 0
 
 
 def collide(a, b):
@@ -41,6 +43,10 @@ def get_eru():
     return eru
 
 
+def get_record():
+    return record
+
+
 def get_dragons():
     return dragons
 
@@ -55,6 +61,26 @@ def get_boss():
 
 def get_bullets():
     return bullets
+
+
+def ranking_save():
+    records = []
+    with open('record_data.json', 'r') as f:
+        data_str = f.read()
+        if len(data_str) == 0:
+            data_str = '[]'
+        data = json.loads(data_str)
+        records = data
+
+        records.append(record)
+        records.sort()
+        records.reverse()
+        if len(records) > 10:
+            records.pop()
+
+    with open('record_data.json', 'w') as f:
+        data_str = json.dumps(records)
+        f.write(data_str)
 
 
 def enter():
@@ -78,6 +104,7 @@ def enter():
 
 
 def exit():
+    ranking_save()
     game_world.clear()
 
 
@@ -106,13 +133,17 @@ def handle_events():
 
 
 def update():
-    global dragons, boss
+    global dragons, boss, record
     for game_object in game_world.all_objects():
         game_object.update()
 
     if len(dragons) <= 0 and eru.stage_level < 4:
         dragons = [Dragon(i, eru.stage_level) for i in range(5)]
         game_world.add_objects(dragons, 1)
+
+    if eru.remain_hp <= 0:
+        record = eru.distance
+        game_framework.change_state(ranking_state)
 
 
 def draw():

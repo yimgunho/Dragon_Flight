@@ -2,6 +2,7 @@ import game_framework
 from pico2d import *
 import main_state
 import title_state
+import game_world
 
 game_name = "PauseState"
 image = None
@@ -11,12 +12,13 @@ pause_draw = True
 
 def enter():
     global image
-    image = load_image('pause.png')
+    image = load_image('./image/pause.png')
 
 
 def exit():
     global image
     del image
+
 
 
 def update():
@@ -38,7 +40,7 @@ def draw():
     clear_canvas()
     main_state.draw()
     if pause_draw:
-        image.draw(350, 420, 200, 200)
+        image.draw(game_world.WIDTH * 0.5, game_world.HEIGHT * 0.5, 200, 200)
     update_canvas()
 
 
@@ -49,6 +51,7 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
+                game_world.clear()
                 game_framework.change_state(title_state)
             elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_p):
                 game_framework.pop_state()

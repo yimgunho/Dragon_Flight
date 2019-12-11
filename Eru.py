@@ -2,6 +2,7 @@ from pico2d import *
 
 import game_framework
 import game_world
+import ranking_state
 from EruBullet import EruBullet
 import title_state
 import main_state
@@ -95,9 +96,6 @@ class MoveState:
         if eru.crash_effect_timer > 0:
             eru.crash_effect_timer -= game_framework.frame_time
 
-        if eru.remain_hp <= 0:
-            game_framework.change_state(title_state)
-
         dragons = main_state.get_dragons()
         ground = main_state.get_ground()
         if eru.distance >= eru.stage_level * 5000 + 5000 and eru.stage_level < 4:
@@ -149,21 +147,21 @@ class Eru:
     def __init__(self):
         if Eru.image == None:
             # eru 관련
-            Eru.image = load_image('Eru.png')
-            Eru.gold_image = load_image('gold.png')
+            Eru.image = load_image('./image/Eru.png')
+            Eru.gold_image = load_image('./image/gold.png')
 
             # eru 업그레이드 관련
-            Eru.attack_upgrade_image = load_image('attack_upgrade.png')
-            Eru.speed_upgrade_image = load_image('speed_upgrade.png')
-            Eru.hp_upgrade_image = load_image('hp_upgrade.png')
+            Eru.attack_upgrade_image = load_image('./image/attack_upgrade.png')
+            Eru.speed_upgrade_image = load_image('./image/speed_upgrade.png')
+            Eru.hp_upgrade_image = load_image('./image/hp_upgrade.png')
 
             # hp 관련
-            Eru.Full_image = load_image('full_hp.png')
-            Eru.Empty_image = load_image('empty_hp.png')
+            Eru.Full_image = load_image('./image/full_hp.png')
+            Eru.Empty_image = load_image('./image/empty_hp.png')
 
             # 피격 관련
-            Eru.eru_crash_image = load_image('eru_crush.png')
-            Eru.background_crash_image = load_image('background_crush.png')
+            Eru.eru_crash_image = load_image('./image/eru_crush.png')
+            Eru.background_crash_image = load_image('./image/background_crush.png')
 
         # eru 위치 관련
         self.x = game_world.WIDTH * 0.5
@@ -190,7 +188,7 @@ class Eru:
         self.event_que = []
         self.cur_state = MoveState
         self.cur_state.enter(self, None)
-        self.font = load_font('NanumGothicExtraBold.TTF', 30)
+        self.font = load_font('./image/NanumGothicExtraBold.TTF', 30)
 
     def get_bb(self):
         return self.x - Eru_Size * 0.2, self.y - Eru_Size * 0.25, self.x + Eru_Size * 0.2, self.y + Eru_Size * 0.25
