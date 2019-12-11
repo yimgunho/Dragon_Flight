@@ -23,9 +23,6 @@ def collide(a, b):
     return True
 
 
-bullet_level = {0: (79, 182), 1: (90, 182), 2: (101, 151), 3: (144, 148), 4: (169, 199)}
-
-
 class BossBullet:
     image = None
 
@@ -47,8 +44,6 @@ class BossBullet:
         return self.x - 30, self.y - 30, self.x + 30, self.y + 30
 
     def update(self):
-        dragons = main_state.get_dragons()
-        boss = main_state.get_boss()
         eru = main_state.get_eru()
 
         self.x += self.trans_x

@@ -10,6 +10,7 @@ import ranking_state
 import title_state
 import pause_state
 from Boss import Boss
+from FireBall import FireBall
 from Ground import Ground
 from Eru import Eru
 from EruBullet import EruBullet
@@ -26,7 +27,8 @@ dragons = []
 bullets = []
 bossbullets = []
 record = 0
-
+fireball = None
+fire_timer = 0
 
 def collide(a, b):
     left_a, bottom_a, right_a, top_a = a.get_bb()
@@ -103,6 +105,7 @@ def enter():
     game_world.add_objects(dragons, 1)
 
 
+
 def exit():
     ranking_save()
     game_world.clear()
@@ -137,7 +140,15 @@ def handle_events():
 
 
 def update():
-    global dragons, boss, record
+    global dragons, boss, record, fire_timer, fireball
+
+    if fire_timer >= 1000:
+        fireball = FireBall()
+        game_world.add_object(fireball, 1)
+        fire_timer = 0
+
+    else:
+        fire_timer += 1
 
     if len(dragons) <= 0 and eru.stage_level < 4:
         dragons = [Dragon(i, eru.stage_level) for i in range(5)]
