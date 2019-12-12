@@ -43,6 +43,11 @@ class Boss:
         self.hp = 500
         self.ending_timer = 0
         self.shoot_timer = 0
+        self.live_sound = load_wav('./image/Sound_BossWarnning.wav')
+        self.live_sound.set_volume(32)
+        self.live_sound.play(1)
+        self.win_sound = load_wav('./image/SOUND_CONG.wav')
+        self.win_sound.set_volume(64)
 
 
     def get_bb(self):

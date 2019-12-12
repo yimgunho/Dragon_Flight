@@ -42,8 +42,9 @@ class FireBall:
         self.y -= Fire_SPEED_PPS * eru.stage_level * 0.2 + Fire_SPEED_PPS
 
         if collide(eru, self):
-            eru.remain_hp -= 1
-            eru.crash_effect_timer = 1
+            if eru.crash_effect_timer <= 0 and eru.eternel == 0:
+                eru.remain_hp -= 1
+                eru.crash_effect_timer = 1
             self.eraser()
 
         elif self.y <= -100:

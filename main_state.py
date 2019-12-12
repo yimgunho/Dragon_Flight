@@ -67,6 +67,9 @@ def get_bullets():
 def get_bossbullets():
     return bossbullets
 
+def get_record():
+    return record
+
 
 def ranking_save():
     records = []
@@ -105,7 +108,6 @@ def enter():
     game_world.add_objects(dragons, 1)
 
 
-
 def exit():
     ranking_save()
     game_world.clear()
@@ -113,7 +115,8 @@ def exit():
         bullet.eraser()
     for dragon in reversed(dragons):
         dragon.delite()
-    global fire_timer
+    global fire_timer, boss
+    boss = None
     fire_timer = 0
 
 
@@ -144,7 +147,7 @@ def handle_events():
 def update():
     global dragons, boss, record, fire_timer, fireball
 
-    if fire_timer == 1000 - eru.stage_level * 100:
+    if fire_timer >= 800 - eru.stage_level * 100:
         fireball = FireBall()
         game_world.add_object(fireball, 1)
         fire_timer = 0
@@ -162,10 +165,14 @@ def update():
 
     if eru.remain_hp <= 0:
         record = eru.distance
+        eru.death_sound.play(1)
         game_framework.change_state(ranking_state)
 
     if boss is not None and boss.hp <= 0:
         boss.ending_timer += 1
+
+        if boss.ending_timer == 1:
+            boss.win_sound.play(1)
 
     if boss is not None and boss.ending_timer >= 500:
         boss = None

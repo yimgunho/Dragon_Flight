@@ -69,8 +69,9 @@ class BossBullet:
             self.eraser()
 
         if collide(eru, self):
-            eru.remain_hp -= 1
-            eru.crash_effect_timer = 1
+            if eru.crash_effect_timer <= 0 and eru.eternel == 0:
+                eru.remain_hp -= 1
+                eru.crash_effect_timer = 1
             self.eraser()
 
     def draw(self):

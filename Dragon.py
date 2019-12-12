@@ -53,6 +53,7 @@ class Dragon:
 
     def update(self):
         eru = main_state.get_eru()
+        bg = main_state.get_ground()
 
         self.y -= DRAGON_SPEED_PPS
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
@@ -61,9 +62,13 @@ class Dragon:
             self.delite()
 
         elif collide(eru, self):
-            eru.remain_hp -= 1
-            eru.crash_effect_timer = 1
+            if eru.crash_effect_timer <= 0 and eru.eternel == 0:
+                eru.remain_hp -= 1
+                eru.crash_effect_timer = 1
+            bg.monster_death += 1
             self.eraser()
+
+
 
     def eru_attack_dragon(self):
         eru = main_state.get_eru()

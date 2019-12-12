@@ -21,6 +21,13 @@ class Ground:
             Ground.images += [load_image('./image/stage4.jpg')]
             Ground.images += [load_image('./image/stage5.jpg')]
 
+        self.bgm = load_music('./image/music_title.ogg')
+        self.bgm.set_volume(64)
+        self.bgm.repeat_play()
+        self.monster_death_sound = load_wav('./image/MonsterDeath.wav')
+        self.monster_death_sound.set_volume(64)
+        self.monster_death = 0
+
         self.frame = a
         self.first = HEIGHT * 0.5
         self.second = HEIGHT * 0.5 + HEIGHT
@@ -36,6 +43,10 @@ class Ground:
         self.first -= int(SPEED_PPS * 0.04)
         self.second -= int(SPEED_PPS * 0.04)
         self.timer += SPEED_PPS * 0.01
+
+        if self.monster_death is not 0:
+            self.monster_death_sound.play()
+            self.monster_death -= 1
 
     def draw(self):
         self.images[self.stage_level].clip_draw(720 * self.frame, 0, 720, 1280, WIDTH * 0.5, self.first, WIDTH, HEIGHT)

@@ -19,7 +19,7 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
-RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, ONE, TWO, THREE, ZERO, NINE = range(9)
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, ONE, TWO, THREE, ZERO, NINE, EIGHT = range(10)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
@@ -30,7 +30,8 @@ key_event_table = {
     (SDL_KEYDOWN, SDLK_2): TWO,
     (SDL_KEYDOWN, SDLK_3): THREE,
     (SDL_KEYDOWN, SDLK_0): ZERO,
-    (SDL_KEYDOWN, SDLK_9): NINE
+    (SDL_KEYDOWN, SDLK_9): NINE,
+    (SDL_KEYDOWN, SDLK_8): EIGHT
 }
 
 
@@ -64,11 +65,13 @@ class MoveState:
             if eru.attack_upgrade_value < 4 and eru.gold >= (eru.attack_upgrade_value + 1) * 10:
                 eru.gold -= (eru.attack_upgrade_value + 1) * 10
                 eru.attack_upgrade_value += 1
+                eru.level_up_sound.play(1)
 
         if event == TWO and eru.gold >= (eru.speed_upgrade_value + 1) * 10:
             if eru.speed_upgrade_value < 4:
                 eru.gold -= (eru.speed_upgrade_value + 1) * 10
                 eru.speed_upgrade_value += 1
+                eru.level_up_sound.play(1)
 
         if event == THREE and eru.remain_hp < 3 and eru.gold >= (eru.hp_upgrade_value + 1) * 10:
             eru.gold -= (eru.hp_upgrade_value + 1) * 10
@@ -82,6 +85,12 @@ class MoveState:
 
         if event == NINE:
             eru.gold += 100
+
+        if event == EIGHT:
+            if eru.eternel == 0:
+                eru.eternel = 1
+            else:
+                eru.eternel = 0
 
     @staticmethod
     def do(eru):
@@ -99,6 +108,8 @@ class MoveState:
 
         if eru.crash_effect_timer > 0:
             eru.crash_effect_timer -= game_framework.frame_time
+            if eru.crash_effect_timer > 0.5:
+                eru.eru_crush_sound.play(1)
 
         dragons = main_state.get_dragons()
         ground = main_state.get_ground()
@@ -108,6 +119,10 @@ class MoveState:
             for dragon in reversed(dragons):
                 if dragon.stage_level < 4:
                     dragon.stage_level = ground.stage_level
+
+        if eru.gold_count > 0:
+            eru.gold_sound.play(1)
+            eru.gold_count = 0
 
     @staticmethod
     def draw(eru):
@@ -119,14 +134,14 @@ class MoveState:
         eru.upgrade_draw()
         eru.crash_draw()
 
-        #draw_rectangle(*eru.get_bb())
+        # draw_rectangle(*eru.get_bb())
 
 
 next_state_table = {
     MoveState: {RIGHT_UP: MoveState, LEFT_UP: MoveState,
                 LEFT_DOWN: MoveState, RIGHT_DOWN: MoveState,
                 ONE: MoveState, TWO: MoveState, THREE: MoveState,
-                ZERO: MoveState, NINE: MoveState}
+                ZERO: MoveState, NINE: MoveState, EIGHT: MoveState}
 }
 
 
@@ -193,6 +208,19 @@ class Eru:
         self.cur_state = MoveState
         self.cur_state.enter(self, None)
         self.font = load_font('./image/NanumGothicExtraBold.TTF', 30)
+        self.eternel = 0
+
+        # 사운드
+        self.eru_crush_sound = load_wav('./image/HIT.wav')
+        self.eru_crush_sound.set_volume(32)
+        self.level_up_sound = load_wav('./image/LEVELUP.wav')
+        self.level_up_sound.set_volume(32)
+        self.death_sound = load_wav('./image/Death.wav')
+        self.death_sound.set_volume(32)
+        self.death_timer = 0
+        self.gold_sound = load_wav('./image/gold.wav')
+        self.gold_sound.set_volume(64)
+        self.gold_count = 0
 
     def get_bb(self):
         return self.x - Eru_Size * 0.1, self.y - Eru_Size * 0.1, self.x + Eru_Size * 0.1, self.y + Eru_Size * 0.1

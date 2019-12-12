@@ -58,6 +58,7 @@ class EruBullet:
         dragons = main_state.get_dragons()
         boss = main_state.get_boss()
         eru = main_state.get_eru()
+        bg = main_state.get_ground()
 
         self.y += BULLET_SPEED_PPS
 
@@ -67,6 +68,7 @@ class EruBullet:
                     dragon.hp -= self.attack_damage / (dragon.stage_level + 1)
                     if dragon.hp <= 0:
                         dragon.eraser()
+                        bg.monster_death += 1
                         if randint(0, 4) == 2:
                             eru.gold += 1
                     self.crush_count += 1
@@ -76,7 +78,7 @@ class EruBullet:
 
         elif eru.stage_level == 4 and boss is not None:
             if collide(boss, self):
-                boss.hp -= self.attack_damage / 20
+                boss.hp -= self.attack_damage / 30
                 self.eraser()
 
     def draw(self):
