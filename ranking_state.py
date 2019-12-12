@@ -25,7 +25,9 @@ def get_ranking_data():
 
 def enter():
     global font
-    font = load_font('./image/ENCR10B.TTF')
+    bg = main_state.get_ground()
+    bg.bgm.pause()
+    font = load_font('./image/NanumGothicExtraBold.TTF', 30)
     get_ranking_data()
     hide_cursor()
     hide_lattice()
@@ -33,19 +35,21 @@ def enter():
 
 
 def exit():
-    pass
-
+    bg = main_state.get_ground()
+    bg.bgm.resume()
 
 def update(): pass
 
 
 def draw():
     clear_canvas()
-    font.draw(game_world.WIDTH * 0.4, game_world.HEIGHT * 0.8, '[Total Ranking]', (0, 0, 0))
+    record = main_state.get_record()
+    font.draw(game_world.WIDTH * 0.35, game_world.HEIGHT * 0.8, '[Total Ranking]', (0, 0, 0))
     i = 1
-    for record in records:
-        font.draw(game_world.WIDTH * 0.4, game_world.HEIGHT * 0.8 - i * 50, '#%d %2.2f M' % (i, record), (0, 0, 0))
+    for recorded in records:
+        font.draw(game_world.WIDTH * 0.35, game_world.HEIGHT * 0.8 - i * 50, '#%d %2.2f M' % (i, recorded), (0, 0, 0))
         i += 1
+    font.draw(game_world.WIDTH * 0.3, game_world.HEIGHT * 0.75 - i * 50, 'My Score : %2.2f M' % record, (0, 0, 0))
     update_canvas()
 
 
